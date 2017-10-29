@@ -1,0 +1,37 @@
+{
+  "name": "uedialogserver",
+  "version": "1.0.0",
+  "description": "Unreal Engine dialog server for saving dialogs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gilengel/ue-dialog-server.git"
+  },
+  "keywords": [
+    "ember",
+    "unreal",
+    "engine",
+    "ue",
+    "javascript",
+    "server"
+  ],
+  "author": "Gil Engel",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/gilengel/ue-dialog-server/issues"
+  },
+  "homepage": "https://github.com/gilengel/ue-dialog-server#readme",
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.1",
+    "xml2js": "^0.4.19"
+  }
+}

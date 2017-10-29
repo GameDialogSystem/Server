@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dialog id="1" name="Bunny Dialog" startingLine="2">
+  <dialog_line id="2" answers="4,3">I'm a cute bunny. I like carrots :3</dialog_line>
+  <dialog_line id="5" answers="">:'( you are a mean person</dialog_line>
+  <dialog_line id="6" answers="7">awwwww thank you my friend :3. nomnomnom.</dialog_line>
+  <dialog_answer id="4" requirement="Perception" requirementValue="5" belongsTo="2" nextLine="5">All carrots are for myself. Keep your distance bunny!!!</dialog_answer>
+  <dialog_answer id="3" requirement="Might" requirementValue="15" belongsTo="2" nextLine="6">Oh I can share my carrots with you. Take this one plushy friend :) cool :</dialog_answer>
+  <dialog_answer id="7" requirement="Perception" requirementValue="3" belongsTo="6">Use me</dialog_answer>
+</dialog>
