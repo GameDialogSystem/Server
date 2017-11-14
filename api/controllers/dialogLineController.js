@@ -1,43 +1,83 @@
-var fs = require('fs'),
+  var fs = require('fs'),
     xml2js = require('xml2js'),
-    server = require('../libraries/xmlServer.js');
+    server = require('../libraries/xmlServer.js'),
+    uuidv4 = require('uuid/v4'),
+    uuidv5 = require('uuid/v5');
 
-createDialogLineEmberObject = function(element){
-  let answers = element.answers.map(function(dialogLineAnswer){
-    return { id : dialogLineAnswer.id, type : 'dialog-answer' };
+var self = this;
+
+exports.createDialogLineEmberObject = function(element){
+  let outputs = element.successors.map(function(output){
+      return {
+        id : uuidv4(),
+        type : 'output'
+      }
   });
 
-  return {
-    "attributes": {
-      "message": element.text
+  // create an empty output to allow new dialog line connections
+  outputs.push({
+    id : uuidv4(),
+    type : 'output'
+  })
+
+  let dialogLine = {
+    attributes: {
+      message: element.text,
+      x: element.x,
+      y: element.y
     },
 
-    "id": element.id,
-    "type" : "dialog-line",
+    id: element.id,
+    type : "dialog-line",
 
-    "relationships": {
-      "inputs": {
-        "data": [
-          { id : '0', type : 'input'}
-        ]
-      },
-
-      "outputs": {
-        "data": answers
+/*
+    relationships: {
+      outputs: {
+        data: outputs
       }
     }
-  }
+    */
+  };
+
+  return dialogLine;
 };
 
 exports.listAllDialogLines = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
-  let dialogLine = server.getDialogs().get('1').dialogLines[0];
-  res.json({ data : createDialogLineEmberObject(dialogLine) });
+  //let dialogLine = server.getDialogs().get('1').dialogLines[0];
+  //res.json({ data : createDialogLineEmberObject(dialogLine) });
 };
 
 exports.createDialogLine = function(req, res) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+
+  let id = req.body.data.id;
+  let data = req.body.data;
+  let message = data.attributes.message.data;
+  let x = data.attributes.x;
+  let y = data.attributes.y;
+
+  let dialog = server.getDialog(data.relationships.dialog.data.id);
+
+
+  let dialogLine = server.createDialogLineObject(dialog, {
+    $ : {
+      id : id
+    },
+
+    _ : data.attributes.message,
+
+    belongsToDialog : dialog
+  });
+
+  console.log(dialogLine);
+
+  server.saveDialog(dialog);
+
+  res.json({ data : createDialogLineEmberObject(dialogLine) });
 };
 
 exports.getDialogLine = function(req, res) {
@@ -46,7 +86,7 @@ exports.getDialogLine = function(req, res) {
   res.header("Access-Control-Allow-Headers", "*");
 
   let dialogLine = server.getDialogLine(req.params.dialogLineId);
-  res.json({ data : createDialogLineEmberObject(dialogLine) });
+  res.json({ data : self.createDialogLineEmberObject(dialogLine) });
 };
 
 exports.updateDialogLine = function(req, res) {
@@ -95,5 +135,10 @@ exports.updateDialogLine = function(req, res) {
 };
 
 exports.deleteDialogLine = function(req, res) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
 
+  let dialogLine = server.deleteDialogLine(req.params.dialogLineId);
+
+  res.json({ data : createDialogLineEmberObject(dialogLine) });
 };

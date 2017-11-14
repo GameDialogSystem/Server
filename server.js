@@ -5,9 +5,10 @@ var express = require('express'),
     server = require('./api/libraries/xmlServer.js');
 
 var dialogRoutes = require('./api/routes/dialogRoutes');
-var dialogLineRoutes = require('./api/routes/dialogLineRoutes')
-var dialogAnswerRoutes = require('./api/routes/dialogAnswerRoutes')
-var inputRoutes = require('./api/routes/inputRoutes')
+var dialogLineRoutes = require('./api/routes/dialogLineRoutes');
+var dialogAnswerRoutes = require('./api/routes/dialogAnswerRoutes');
+var inputRoutes = require('./api/routes/inputRoutes');
+var outputRoutes = require('./api/routes/outputRoutes');
 
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
@@ -16,6 +17,7 @@ dialogRoutes(app);
 dialogLineRoutes(app);
 dialogAnswerRoutes(app);
 inputRoutes(app);
+outputRoutes(app);
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");

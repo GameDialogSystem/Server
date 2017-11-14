@@ -5,10 +5,10 @@ module.exports = function(app) {
   // todoList Routes
   app.route('/dialogs')
     .get(dialogs.listAllDialogs)
-    .post(dialogs.create_a_dialog);
+    .post(dialogs.createDialog);
 
   app.route('/dialogs/:dialogId')
     .get(dialogs.getDialog)
     .patch(dialogs.updateDialog)
-    .delete(dialogs.delete_dialog)
+    .delete(dialogs.deleteDialog)
 };

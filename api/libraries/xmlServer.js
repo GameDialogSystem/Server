@@ -4,7 +4,8 @@ var fileUtil = require('../libraries/fileUtility.js'),
     fs = Promise.promisifyAll(require('fs')),
     path = require('path'),
     resolve = require('path').resolve,
-    xml2js = require('xml2js');
+    xml2js = require('xml2js'),
+    uuidv4 = require('uuid/v4');
 
 var directory = resolve(__dirname + '/../../files/');
 
@@ -14,10 +15,6 @@ var dialogAnswers = new Map();
 
 
 createDialogObject = function(element){
-  console.log("==============");
-  console.log(element);
-  console.log("==============");
-
   let dialog = element.dialog;
   let dialogLines = dialog.dialog_line;
   let lines = [];
@@ -25,111 +22,86 @@ createDialogObject = function(element){
     lines[index] = dialogLines[index].$.id;
   }
 
-  return [dialog.$.id, {
+  return {
     'id' : dialog.$.id,
-    'name' : dialog.$.name,
-    'startingLine' : dialog.$.startingLine,
+      'name' : dialog.$.name,
+      'startingLine' : dialog.$.startingLine,
 
-    'dialogLines' : [],
-    'dialogAnswers' : []
-  }];
+      'dialogLines' : []
+  }
 }
 
-createDialogLineObject = function(dialog, element){
-  return [element.$.id, {
+exports.createDialogLineObject = function(dialog, element){
+  let dialogLine = {
     'id' : element.$.id,
     'text' : element._,
-    'answers' : [],
+    'successors' : [],
     'belongsToDialog' : dialog
-  }];
-}
-
-createDialogLineAnswerObject = function(element){
-  let dialogLine = dialogLines.get(element.$.belongsTo);
-  let nextDialogLine = dialogLines.get(element.$.nextLine);
-  let dialogAnswer = {
-    'id' : element.$.id,
-    'text' : element._,
-    'requirement' : element.$.requirement,
-    'requirementValue' : element.$.requirementValue,
-    'nextLine': dialogLines.get(element.$.nextLine),
-    'belongsTo': dialogLine
   };
 
+  if(element.$.x !== undefined){
+    dialogLine.x = element.$.x;
+  }
 
+  if(element.$.y !== undefined){
+    dialogLine.y = element.$.y;
+  }
 
-  dialogLine.answers.push(dialogAnswer);
+  dialogLines.set(element.$.id, dialogLine);
 
-  return [element.$.id, dialogAnswer];
+  //dialogLine.successors.push(dialogAnswer);
+  dialog.dialogLines.push(dialogLine);
+
+  return dialogLine;
 }
 
 saveDialogLine = function(dialogLine){
-  let lines = dialogLine.answers.map(function(dialogAnswer){
+/*
+  let lines = dialogLine.successors.map(function(dialogAnswer){
     return dialogAnswer.id;
   })
+*/
 
   return {
       '_' : dialogLine.text,
       '$' : {
         id : dialogLine.id,
-        answers : lines
+        //successors : lines
       }
     };
 };
 
-saveDialogAnswer = function(dialogAnswer){
-  let result = {
-    '_' : dialogAnswer.text,
-    '$' : {
-      id : dialogAnswer.id,
-      requirement : dialogAnswer.requirement,
-      requirementValue : dialogAnswer.requirementValue,
-      belongsTo : dialogAnswer.belongsTo.id,
-      //nextLine : dialogAnswer.nextLine.id
-    }
-  };
-
-  if(dialogAnswer.nextLine !== undefined){
-    result.$['nextLine'] = dialogAnswer.nextLine.id;
-  }
-
-  return result;
-}
-
 exports.saveDialog = function(dialog){
-  let answers = dialog.dialogAnswers.map(function(dialogAnswer){
+  /*
+  let successors = dialog.dialogAnswers.map(function(dialogAnswer){
     return saveDialogAnswer(dialogAnswer);
   });
+  */
 
   let lines = dialog.dialogLines.map(function(dialogLine){
     return saveDialogLine(dialogLine);
   });
 
   let result = {
-    '$' : {
-      id: dialog.id,
-      name : dialog.name,
-      startingLine : dialog.startingLine.id
-    },
+    'dialog' : {
+      '$' : {
+        id: dialog.id,
+        name : dialog.name,
+        startingLine : dialog.startingLine.id
+      },
 
-    'dialog_line' : lines,
-    'dialog_answer' : answers
+      'dialog_line' : lines
+    }
   };
+
+  console.log(result);
 
   var builder = new xml2js.Builder();
   var xml = builder.buildObject(result);
 
-  fileUtil.writeFile('../../../files/foo.xml', xml, function(){}, function(){});
-}
-
-exports.removeDialogAnswer = function(dialog, dialogAnswer){
-  var array = dialog.dialogAnswers;
-  var index = array.indexOf(dialogAnswer);
-  if (index > -1) {
-      array.splice(index, 1);
-  }
-  dialog.dialogAnswers = array;
-  dialogAnswers.delete(dialogAnswer.id);
+  fileUtil.writeFile('/../../files/foo2.xml', xml, function(){}, function(err){
+      console.log("writing file caused this error :" +err);
+  });
 }
 
 exports.getDialogs = function(){
@@ -141,11 +113,22 @@ exports.getDialog = function(id){
 }
 
 exports.getDialogLine = function(id){
+
+  // TODO make this more intelligent. shifting all successors only to push
+  // the first dummy element to the back seems inefficient
+  let dialogLine = dialogLines.get(id);
+
+  let dummy = dialogLine.successors.shift();
+  dialogLine.successors.push(dummy);
+
   return dialogLines.get(id);
 }
 
-exports.getDialogAnswer = function(id){
-  return dialogAnswers.get(id);
+exports.deleteDialogLine = function(id){
+  let dialogLine = this.getDialogLine(id);
+  dialogLines.delete(id);
+
+  return dialogLine;
 }
 
 exports.getFiles = function(directory){
@@ -153,6 +136,8 @@ exports.getFiles = function(directory){
 }
 
 exports.readAllDialogs = function(){
+  let self = this;
+
   var files = this.getFiles(directory).map(function(filename){
     return fileUtil.readFile(path.join(directory,filename));
   }).then(function(content){
@@ -162,24 +147,14 @@ exports.readAllDialogs = function(){
 
       list.forEach(function(element){
 
-        var newDialog = createDialogObject(element);
-        dialogs.set(newDialog[0], newDialog[1]);
+        var dialog = createDialogObject(element);
+        dialogs.set(dialog.id, dialog);
 
         element.dialog.dialog_line.forEach(function(dialogLine){
-          var newDialogLine = createDialogLineObject(newDialog[1], dialogLine);
-          dialogLines.set(newDialogLine[0], newDialogLine[1]);
-
-          newDialog[1].dialogLines.push(newDialogLine[1]);
+          self.createDialogLineObject(dialog, dialogLine);
         });
 
-        newDialog[1].startingLine = dialogLines.get(newDialog[1].startingLine);
-
-        element.dialog.dialog_answer.forEach(function(dialogAnswer){
-          var newDialogAnswer = createDialogLineAnswerObject(dialogAnswer);
-          dialogAnswers.set(newDialogAnswer[0], newDialogAnswer[1]);
-
-          newDialog[1].dialogAnswers.push(newDialogAnswer[1]);
-        });
+        dialog.startingLine = dialogLines.get(dialog.startingLine);
       });
     });
   });

@@ -4,6 +4,7 @@ var fileUtil = require('../libraries/fileUtility.js'),
     fs = Promise.promisifyAll(require('fs')),
     xml2js = require('xml2js'),
     server = require('../libraries/xmlServer.js');
+const uuidv5 = require('uuid/v5');
 
 exports.listAllDialogAnswers = function(req, res) {
   console.log("List All Dialogs");
@@ -21,13 +22,12 @@ createDialogAnswerObject = function(dialogAnswer){
     type : 'dialog-answer',
   };
 
-
   if(dialogAnswer.nextLine !== undefined){
     answer['relationships'] = {
-      'next-dialog-line': {
+      'input': {
         data : {
-          id : dialogAnswer.nextLine.id,
-          type : 'dialog-line'
+          id : uuidv5('dialog-line '+dialogAnswer.nextLine.id, '787b05d6-1b55-4c0c-981e-834fbdcc951d'),
+          type : 'input'
         }
       }
     }
@@ -40,37 +40,8 @@ exports.createDialogAnswer = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
-  readFile('../../../files/foo.xml', function(result){
-    parseStringFromFile(result, function(parser, parserResult){
-      let data = req.body.data;
-      let dialogAnswers = parserResult.dialog.dialog_answer;
-      let dialogLine = data.attributes;
-      let newMessage = data.attributes.response;
-      let object = { _: dialogLine.response,
-                     $ : {
-                       id : data.id,
-                       requirement : dialogLine.requirement,
-                       requirementValue : dialogLine.requirementValue,
-                       belongsTo: data.relationships['belongs-to'].data.id
-                     }
-                   };
-
-      parserResult.dialog.dialog_answer.push(object);
-
-    for(index in parserResult.dialog.dialog_line){
-      let dialogLine = parserResult.dialog.dialog_line[index].$;
-      if(dialogLine.id == data.relationships['belongs-to'].data.id){
-        if(dialogLine.answers != null){
-          dialogLine.answers += ',';
-        }
-        dialogLine.answers += data.id
-      }
-    }
-      buildFileFromObject(parserResult, '../../../files/foo.xml', function(){
-        res.json(createDialogAnswerObject(object));
-      });
-    });
-  });
+  console.log(req.body);
+  //server.addLineToDialog
 };
 
 
@@ -106,7 +77,6 @@ exports.deleteDialogAnswer = function(req, res) {
   let dialogAnswer = server.getDialogAnswer(req.params.dialogAnswerId);
   let dialog = dialogAnswer.belongsTo.belongsToDialog;
   server.removeDialogAnswer(dialog, dialogAnswer);
-
 
   server.saveDialog(dialog);
 
