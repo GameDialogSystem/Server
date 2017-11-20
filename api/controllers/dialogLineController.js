@@ -7,6 +7,7 @@
 var self = this;
 
 exports.createDialogLineEmberObject = function(element){
+
   let outputs = element.successors.map(function(output){
       return {
         id : uuidv4(),
@@ -21,22 +22,25 @@ exports.createDialogLineEmberObject = function(element){
   })
 
   let dialogLine = {
-    attributes: {
-      message: element.text,
-      x: element.x,
-      y: element.y
+    "data" : {
+      "attributes": {
+        "message": element.text,
+        "x": element.x,
+        "y": element.y
+      },
+
+      "id": element.id,
+      "type": 'dialog-line',
+
+
+      "relationships": {
+        "outputs": {
+          "data": outputs
+        }
+      }
     },
 
-    id: element.id,
-    type : "dialog-line",
-
-/*
-    relationships: {
-      outputs: {
-        data: outputs
-      }
-    }
-    */
+    "included": outputs
   };
 
   return dialogLine;
@@ -77,7 +81,7 @@ exports.createDialogLine = function(req, res) {
 
   server.saveDialog(dialog);
 
-  res.json({ data : createDialogLineEmberObject(dialogLine) });
+  res.json(createDialogLineEmberObject(dialogLine));
 };
 
 exports.getDialogLine = function(req, res) {
@@ -86,7 +90,7 @@ exports.getDialogLine = function(req, res) {
   res.header("Access-Control-Allow-Headers", "*");
 
   let dialogLine = server.getDialogLine(req.params.dialogLineId);
-  res.json({ data : self.createDialogLineEmberObject(dialogLine) });
+  res.json(self.createDialogLineEmberObject(dialogLine));
 };
 
 exports.updateDialogLine = function(req, res) {

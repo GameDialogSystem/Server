@@ -44,10 +44,8 @@ exports.createDialogEmberObject = function(element){
       }
     },
 
-    "included": lines
+    //"included": lines
   }
-
-  console.log(result);
 
   return result;
 }
