@@ -15,7 +15,7 @@ exports.createDialogEmberObject = function(element){
   // create an array with the IDs for each containing line within
   // the dialog
   let lines = element.dialogLines.map(function(line){
-    return dialogLineController.createDialogLineEmberObject(line); //{ id : line.id, type : "dialog-line" };
+    return dialogLineController.createDialogLineEmberObject(line);
   });
 
   let relationshipLines = element.dialogLines.map(function(line){

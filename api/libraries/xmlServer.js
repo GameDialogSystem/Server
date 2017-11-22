@@ -35,9 +35,16 @@ exports.createDialogLineObject = function(dialog, element){
   let dialogLine = {
     'id' : element.$.id,
     'text' : element._,
-    'successors' : [],
     'belongsToDialog' : dialog
   };
+
+  if(element.$.inputs !== undefined){
+    dialogLine.inputs = element.$.inputs.split(',');
+  }
+
+  if(element.$.outputs !== undefined){
+    dialogLine.outputs = element.$.outputs.split(',');
+  }
 
   if(element.$.x !== undefined){
     dialogLine.x = element.$.x;
@@ -49,35 +56,30 @@ exports.createDialogLineObject = function(dialog, element){
 
   dialogLines.set(element.$.id, dialogLine);
 
-  //dialogLine.successors.push(dialogAnswer);
   dialog.dialogLines.push(dialogLine);
+
+
 
   return dialogLine;
 }
 
 saveDialogLine = function(dialogLine){
-/*
-  let lines = dialogLine.successors.map(function(dialogAnswer){
-    return dialogAnswer.id;
-  })
-*/
-
-  return {
+  var result = {
       '_' : dialogLine.text,
       '$' : {
         id : dialogLine.id,
-        //successors : lines
+        outputs: dialogLine.outputs,
       }
     };
+
+    if(dialogLine.inputs !== undefined){
+      result.$.inputs = dialogLine.inputs
+    }
+
+    return result;
 };
 
 exports.saveDialog = function(dialog){
-  /*
-  let successors = dialog.dialogAnswers.map(function(dialogAnswer){
-    return saveDialogAnswer(dialogAnswer);
-  });
-  */
-
   let lines = dialog.dialogLines.map(function(dialogLine){
     return saveDialogLine(dialogLine);
   });
@@ -93,8 +95,6 @@ exports.saveDialog = function(dialog){
       'dialog_line' : lines
     }
   };
-
-  console.log(result);
 
   var builder = new xml2js.Builder();
   var xml = builder.buildObject(result);
@@ -118,8 +118,8 @@ exports.getDialogLine = function(id){
   // the first dummy element to the back seems inefficient
   let dialogLine = dialogLines.get(id);
 
-  let dummy = dialogLine.successors.shift();
-  dialogLine.successors.push(dummy);
+  let dummy = dialogLine.outputs.shift();
+  dialogLine.outputs.push(dummy);
 
   return dialogLines.get(id);
 }

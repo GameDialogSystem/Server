@@ -7,10 +7,9 @@
 var self = this;
 
 exports.createDialogLineEmberObject = function(element){
-
-  let outputs = element.successors.map(function(output){
+  let outputs = element.outputs.map(function(output){
       return {
-        id : uuidv4(),
+        id : output,
         type : 'output'
       }
   });
@@ -66,22 +65,37 @@ exports.createDialogLine = function(req, res) {
 
   let dialog = server.getDialog(data.relationships.dialog.data.id);
 
+  let inputIDs = [];
+  if(data.relationships.inputs){
+    inputIDs = data.relationships.inputs.data.map(function(input){
+      return input.id;
+    })
+  }
+
+  let outputIDs = [];
+  if(data.relationships.outputs){
+    outputIDs = data.relationships.output.data.map(function(output){
+      return output.id;
+    })
+  }
+
 
   let dialogLine = server.createDialogLineObject(dialog, {
-    $ : {
-      id : id
+    "$" : {
+      "id" : id,
+
+      "outputs" : outputIDs.join(),
+      "inputs" : inputIDs.join()
     },
 
-    _ : data.attributes.message,
+    "_" : data.attributes.message,
 
     belongsToDialog : dialog
   });
 
-  console.log(dialogLine);
-
   server.saveDialog(dialog);
 
-  res.json(createDialogLineEmberObject(dialogLine));
+  res.json(self.createDialogLineEmberObject(dialogLine));
 };
 
 exports.getDialogLine = function(req, res) {
