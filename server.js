@@ -2,7 +2,8 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     app = express(),
     port = process.env.PORT || 3000,
-    server = require('./api/libraries/xmlServer.js');
+    server = require('./api/libraries/xmlServer.js'),
+    parser = require('./api/libraries/xmlParser.js');
 
 var dialogRoutes = require('./api/routes/dialogRoutes');
 var dialogLineRoutes = require('./api/routes/dialogLineRoutes');
@@ -33,8 +34,15 @@ app.use(function(req, res, next) {
 
 app.listen(port);
 
-server.readAllDialogs();
+//server.readAllDialogs();
 
+app.get('/',function(req,res){
+    parser.registerElementParser('dialog', require('./api/libraries/dialogParser.js'));
+    parser.registerElementParser('dialog_line', require('./api/libraries/dialogLineParser.js'));
+    parser.registerElementParser('text', require('./api/libraries/textParser.js'));
+    parser.registerElementParser('condition', require('./api/libraries/conditionParser.js'));
 
+    parser.parseFile('./files/foo.xml', res);
+});
 
 console.log('UE Dialog RESTful API server started on: ' + port);

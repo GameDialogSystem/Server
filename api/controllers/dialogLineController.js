@@ -1,24 +1,44 @@
   var fs = require('fs'),
     xml2js = require('xml2js'),
     server = require('../libraries/xmlServer.js'),
+    outputController = require('./outputController.js'),
     uuidv4 = require('uuid/v4'),
     uuidv5 = require('uuid/v5');
 
 var self = this;
 
 exports.createDialogLineEmberObject = function(element){
-  let outputs = element.outputs.map(function(output){
-      return {
-        id : output,
-        type : 'output'
-      }
-  });
+  let dialogLineID = element.id;
+  var followingLines = [];
+  if(element.followingLines !== undefined){
+    followingLines = element.followingLines.map(function(followingLine, index){
 
-  // create an empty output to allow new dialog line connections
-  outputs.push({
-    id : uuidv4(),
-    type : 'output'
-  })
+      let successor = server.getDialogLine(followingLine);
+      let relationship = (successor.previousLines.find(function(element){
+        return (element === dialogLineID);
+      }));
+      let relationshipIndex = successor.previousLines.indexOf(relationship);
+
+      let outputID = outputController.createID(element.id, index);
+      let inputID = "line" + followingLine + "input" + relationshipIndex;
+      return outputController.createOutputJSONAPI(outputID, dialogLineID, inputID);
+    });
+
+    followingLines.push(outputController.createOutputJSONAPI(outputController.createID(element.id, element.followingLines.length), dialogLineID));
+  }else{
+    followingLines.push(outputController.createOutputJSONAPI(outputController.createID(element.id, 0), dialogLineID));
+  }
+
+  var previousLines = [];
+  if(element.previousLines !== undefined){
+    previousLines = element.previousLines.map(function(previousLine, index){
+
+        return {
+          id : "line" + element.id + "input" + index,
+          type : 'input'
+        }
+    });
+  }
 
   let dialogLine = {
     "data" : {
@@ -34,23 +54,19 @@ exports.createDialogLineEmberObject = function(element){
 
       "relationships": {
         "outputs": {
-          "data": outputs
+          "data": followingLines
+        },
+
+        "inputs": {
+          "data": previousLines
         }
       }
     },
 
-    "included": outputs
+    "included": followingLines.concat(previousLines)
   };
 
   return dialogLine;
-};
-
-exports.listAllDialogLines = function(req, res) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "*");
-
-  //let dialogLine = server.getDialogs().get('1').dialogLines[0];
-  //res.json({ data : createDialogLineEmberObject(dialogLine) });
 };
 
 exports.createDialogLine = function(req, res) {
@@ -65,17 +81,17 @@ exports.createDialogLine = function(req, res) {
 
   let dialog = server.getDialog(data.relationships.dialog.data.id);
 
-  let inputIDs = [];
-  if(data.relationships.inputs){
-    inputIDs = data.relationships.inputs.data.map(function(input){
-      return input.id;
+  let followingLinesIDs = [];
+  if(data.relationships.followingLines){
+    followingLinesIDs = data.relationships.followingLines.data.map(function(followingLine){
+      return followingLine.id;
     })
   }
 
-  let outputIDs = [];
-  if(data.relationships.outputs){
-    outputIDs = data.relationships.output.data.map(function(output){
-      return output.id;
+  let previousLinesIDs = [];
+  if(data.relationships.previousLines){
+    previousLinesIDs = data.relationships.previousLines.data.map(function(previousLine){
+      return previousLine.id;
     })
   }
 
@@ -84,8 +100,8 @@ exports.createDialogLine = function(req, res) {
     "$" : {
       "id" : id,
 
-      "outputs" : outputIDs.join(),
-      "inputs" : inputIDs.join()
+      "outputs" : followingLinesIDs.join(),
+      "inputs" : previousLinesIDs.join(),
     },
 
     "_" : data.attributes.message,
@@ -93,13 +109,11 @@ exports.createDialogLine = function(req, res) {
     belongsToDialog : dialog
   });
 
-  server.saveDialog(dialog);
-
+  //server.saveDialog(dialog);
   res.json(self.createDialogLineEmberObject(dialogLine));
 };
 
 exports.getDialogLine = function(req, res) {
-
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
@@ -107,7 +121,9 @@ exports.getDialogLine = function(req, res) {
   res.json(self.createDialogLineEmberObject(dialogLine));
 };
 
+
 exports.updateDialogLine = function(req, res) {
+  /*
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD")
   res.header("Access-Control-Allow-Headers", "*");
@@ -150,13 +166,16 @@ exports.updateDialogLine = function(req, res) {
         }
       });
   });
+  */
 };
 
 exports.deleteDialogLine = function(req, res) {
+  /*
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
   let dialogLine = server.deleteDialogLine(req.params.dialogLineId);
 
   res.json({ data : createDialogLineEmberObject(dialogLine) });
+  */
 };

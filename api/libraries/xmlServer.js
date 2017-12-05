@@ -5,14 +5,16 @@ var fileUtil = require('../libraries/fileUtility.js'),
     path = require('path'),
     resolve = require('path').resolve,
     xml2js = require('xml2js'),
-    uuidv4 = require('uuid/v4');
+    uuidv4 = require('uuid/v4'),
+    uuidv5 = require('uuid/v5');
 
 var directory = resolve(__dirname + '/../../files/');
 
 var dialogs = new Map();
 var dialogLines = new Map();
 var dialogAnswers = new Map();
-
+var dialogLineInput = new Map();
+var dialogLineOutput = new Map();
 
 createDialogObject = function(element){
   let dialog = element.dialog;
@@ -35,15 +37,17 @@ exports.createDialogLineObject = function(dialog, element){
   let dialogLine = {
     'id' : element.$.id,
     'text' : element._,
-    'belongsToDialog' : dialog
+    'belongsToDialog' : dialog,
   };
 
-  if(element.$.inputs !== undefined){
-    dialogLine.inputs = element.$.inputs.split(',');
+
+
+  if(element.$.followingLines !== undefined){
+    dialogLine.followingLines = element.$.followingLines.split(',');
   }
 
-  if(element.$.outputs !== undefined){
-    dialogLine.outputs = element.$.outputs.split(',');
+  if(element.$.previousLines !== undefined){
+    dialogLine.previousLines = element.$.previousLines.split(',');
   }
 
   if(element.$.x !== undefined){
@@ -64,17 +68,22 @@ exports.createDialogLineObject = function(dialog, element){
 }
 
 saveDialogLine = function(dialogLine){
+
   var result = {
-      '_' : dialogLine.text,
-      '$' : {
-        id : dialogLine.id,
-        outputs: dialogLine.outputs,
+      "_" : dialogLine.text,
+      "$" : {
+        "id" : dialogLine.id
       }
     };
 
-    if(dialogLine.inputs !== undefined){
-      result.$.inputs = dialogLine.inputs
+    if(dialogLine.followingLines !== undefined) {
+      result.$.followingLines = dialogLine.followingLines.join(',');
     }
+
+    if(dialogLine.previousLines !== undefined) {
+      result.$.previousLines = dialogLine.previousLines.join(',');
+    }
+
 
     return result;
 };
@@ -118,8 +127,8 @@ exports.getDialogLine = function(id){
   // the first dummy element to the back seems inefficient
   let dialogLine = dialogLines.get(id);
 
-  let dummy = dialogLine.outputs.shift();
-  dialogLine.outputs.push(dummy);
+  if(dialogLine === undefined)
+    return undefined;
 
   return dialogLines.get(id);
 }
@@ -146,7 +155,7 @@ exports.readAllDialogs = function(){
     }).then(function(list){
 
       list.forEach(function(element){
-
+        
         var dialog = createDialogObject(element);
         dialogs.set(dialog.id, dialog);
 

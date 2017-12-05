@@ -4,7 +4,6 @@ module.exports = function(app) {
 
   // todoList Routes
   app.route('/dialog-lines/')
-    .get(dialogLines.listAllDialogLines)
     .post(dialogLines.createDialogLine);
 
   app.route('/dialog-lines/:dialogLineId')

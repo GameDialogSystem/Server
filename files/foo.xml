@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <dialog id="1" name="Bunny Dialog" startingLine="2">
-  <dialog_line id="2" outputs="1,2">I'm a cute bunny. I like carrots :3</dialog_line>
+  <dialog_line id="2" followingLines="3,4,5" x="100" y="100">
+    <condition>Here goes a condition</condition>
+    <text>Hello little Monkey</text>
+  </dialog_line>
+
+  <dialog_line id="3" previousLines="2" x="100" y="400">
+    <text>Do you want a tasty banana?</text>
+  </dialog_line>
+
+  <dialog_line id="4" previousLines="2" x="600" y="400">
+    <text>Do you want to play?</text>
+  </dialog_line>
+
+  <dialog_line id="5" previousLines="2" x="1100" y="400">
+    <text>Where is your mother?</text>
+  </dialog_line>
 </dialog>

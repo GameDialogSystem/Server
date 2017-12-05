@@ -12,13 +12,7 @@ var self = this;
 * Creates a dialog element in a JSON format to return it to Ember
 */
 exports.createDialogEmberObject = function(element){
-  // create an array with the IDs for each containing line within
-  // the dialog
   let lines = element.dialogLines.map(function(line){
-    return dialogLineController.createDialogLineEmberObject(line);
-  });
-
-  let relationshipLines = element.dialogLines.map(function(line){
     return { id : line.id, type : "dialog-line" };
   });
 
@@ -39,12 +33,10 @@ exports.createDialogEmberObject = function(element){
         },
 
         "lines": {
-          "data": relationshipLines
+          "data": lines
         }
       }
     },
-
-    //"included": lines
   }
 
   return result;
