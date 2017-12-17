@@ -1,10 +1,24 @@
 var emberParser = require("./emberDataParser.js");
+var connectionParser = require("./connectionParser.js");
+
 var Promise = require("bluebird");
 
-var events = require('events');
-var eventEmitter = new events.EventEmitter();
+var eventEmitter = undefined;
 
-var lines = new Map();
+
+exports.lines = new Map();
+
+var self = this;
+
+/**
+*
+*/
+var pendingRelationships = new Map();
+
+exports.registerEventEmitter = function(emitter){
+  eventEmitter = emitter;
+}
+
 /**
  * addDialogLine - TODO add functionality to add parsed dialog line elements
  *
@@ -12,10 +26,10 @@ var lines = new Map();
  * @return {type}    description
  */
 addDialogLine = function(dialogLine){
-  lines.set(dialogLine);
-
+  self.lines.set(dialogLine.data.id, dialogLine);
   eventEmitter.emit('addDialogLine', dialogLine);
 }
+
 
 
 /**
@@ -53,18 +67,8 @@ getDialogLine = function(index){
  * @return {type}         description
  */
 exports.parse = function(element){
+  return new Promise(function(resolve, reject){
   let id = element.$.id;
-
-  var previousLines = undefined;
-  if(element.$.previousLines !== undefined){
-    previousLines = element.$.previousLines.split(',');
-  }
-
-  var followingLines = undefined;
-  if(element.$.followingLines !== undefined){
-    followingLines = element.$.followingLines.split(',');
-  }
-
 
   var attributes = new Map();
   var relationships = new Map();
@@ -84,53 +88,52 @@ exports.parse = function(element){
     attributes.set('alreadySaid', already);
   }
 
+  var connections = undefined;
+  if(element.$.connections !== undefined){
 
+    connections = element.$.connections.split(',');
 
-  if(followingLines !== undefined){
-    let outputArray = followingLines.map(function(line, index){
-      return getDialogLine(followingLines[index]);
-      // be aware that we ignore the data parent object because we want to return
-      // an array of multiple entries.
-      //return emberParser.createEmberObject("output", "line"+id+"ouput"+index).data;
-    });
+    connections = connections.map(function(connection){
 
-    // update the relationships of the dialog line
-    Promise.all(outputArray).then(function(values){
-      // convert single relationship items to an array of mulitple ones
-      let a = values.map(function(lineRelationship){
-        return lineRelationship.data;
+      return new Promise(function(resolve, reject){
+
+        let parsedConnection = connectionParser.connections.get(connection);
+
+        eventEmitter.on('addDialogLineConnection', function(dialogLineConnection){
+          if(connection == dialogLineConnection.data.id){
+            resolve(dialogLineConnection.data);
+          }
+        });
       });
-
-      console.log(relationships);
     })
 
-    relationships.set('outputs', { "data" : outputArray });
-
-
-  }
-
-  if(previousLines !== undefined){
-    let inputArray = previousLines.map(function(line, index){
-      // be aware that we ignore the data parent object because we want to return
-      // an array of multiple entries.
-      return emberParser.createEmberObject("input", "line"+id+"input"+index).data;
-    });
-
-    relationships.set('inputs', { "data" : { inputArray } });
   }
 
 
+  Promise.all(connections).then(function(cons){
 
-  // finally create the ember data object
-  let emberObject = emberParser.createEmberObject("dialog-line", id, attributes, relationships);
+    relationships.set("connections", { "data" : cons })
 
-  // inform the parser that a dialog line was parsed. This is needed to inform
-  // other dialog lines pointing to the parsed dialog line by a relationship
-  // like following / previous line
-  addDialogLine(emberObject);
+    // finally create the ember data object
+    let emberObject = emberParser.createEmberObject("dialog-line", id, attributes, relationships);
+    // inform the parser that a dialog line was parsed. This is needed to inform
+    // other dialog lines pointing to the parsed dialog line by a relationship
+    // like following / previous line
+    addDialogLine(emberObject);
 
-  if(emberObject.relationships.outputs)
-  console.log(emberObject.relationships.outputs);
 
-  return emberObject;
+    resolve(emberObject);
+  })
+
+
+
+
+
+
+
+  //return emberObject;
+  });
+}
+
+exports.informAboutParsedChildren = function(children){
 }

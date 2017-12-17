@@ -2,8 +2,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     app = express(),
     port = process.env.PORT || 3000,
-    server = require('./api/libraries/xmlServer.js'),
-    parser = require('./api/libraries/xmlParser.js');
+    server = require('./api/libraries/xmlServer.js');
 
 var dialogRoutes = require('./api/routes/dialogRoutes');
 var dialogLineRoutes = require('./api/routes/dialogLineRoutes');
@@ -13,7 +12,7 @@ var outputRoutes = require('./api/routes/outputRoutes');
 
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
-
+// register the routes
 dialogRoutes(app);
 dialogLineRoutes(app);
 dialogAnswerRoutes(app);
@@ -30,19 +29,11 @@ app.use(function(req, res, next) {
   next();
 });
 
-
+// registers element parsers and initializes the xml server
+server.initialize();
+server.readAllDialogs();
 
 app.listen(port);
 
-//server.readAllDialogs();
-
-app.get('/',function(req,res){
-    parser.registerElementParser('dialog', require('./api/libraries/dialogParser.js'));
-    parser.registerElementParser('dialog_line', require('./api/libraries/dialogLineParser.js'));
-    parser.registerElementParser('text', require('./api/libraries/textParser.js'));
-    parser.registerElementParser('condition', require('./api/libraries/conditionParser.js'));
-
-    parser.parseFile('./files/foo.xml', res);
-});
 
 console.log('UE Dialog RESTful API server started on: ' + port);

@@ -1,5 +1,6 @@
 var emberParser = require("./emberDataParser.js");
 
+var eventEmitter = undefined;
 
 /**
  * exports - parses the xml output and creates an Ember model representation
@@ -9,34 +10,36 @@ var emberParser = require("./emberDataParser.js");
  * @return {object}         model representation of a dialog line as a JSON API object
  */
 exports.parse = function(element, parser){
-  let id = element.$.id;
-  let name = element.$.name;
-  let startingLine = element.$.startingLine;
+  return new Promise(function(resolve, reject){
+    let id = element.$.id;
+    let name = element.$.name;
+    let startingLine = element.$.startingLine;
 
-  var attributes = new Map();
-  if(name !== undefined){
-    attributes.set('name', name);
-  }
+    var attributes = new Map();
+    if(name !== undefined){
+      attributes.set('name', name);
+    }
 
-  
-/*
-  // create the relationship to the starting line
-  var relationships = new Map();
-  relationships.set('startingLine', emberParser.createEmberObject("dialog-line", startingLine));
 
-  // create the ember object
-  let emberObject = emberParser.createEmberObject("dialog", id, attributes, relationships);
+    var dialogLines = element.dialog_line.map(line => {
+      return emberParser.createEmberObject("dialog-line", line.$.id).data;
+    })
 
-  return emberObject;
-*/
+    var relationships = new Map();
+    relationships.set("lines", dialogLines);
+
+    resolve(emberParser.createEmberObject("dialog", id, attributes, relationships));
+  });
 }
 
-exports.parseToXml = function(element){
-  let xmlObject = {
-    "$" : {
-      "id" : element.data.id,
-      "name": element.data.name,
-      "startingLine" : element.relationships.startingLine.data.id
-    }
-  }
+exports.informAboutParsedChildren = function(children){
+    let dialogLines = children.filter(function(e){
+      if(e === undefined) return false;
+
+      return (e.data.type === "dialog-line");
+    })
+
+    let dialogLineRelationships = dialogLines.map(line => {
+      return emberParser.convertEmberObjectToEmberRelationship(line);
+    })
 }

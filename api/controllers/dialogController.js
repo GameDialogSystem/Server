@@ -1,50 +1,5 @@
-var fileUtil = require("../libraries/fileUtility.js"),
-    xmlUtil = require("../libraries/xmlUtility.js"),
-    Promise = require("bluebird"),
-    fs = Promise.promisifyAll(require("fs")),
-    xml2js = require("xml2js"),
-    server = require("../libraries/xmlServer.js"),
+var server = require("../libraries/xmlServer.js");
 
-    dialogLineController = require("./dialogLineController.js");
-
-var self = this;
-/**
-* Creates a dialog element in a JSON format to return it to Ember
-*/
-exports.createDialogEmberObject = function(element){
-  let lines = element.dialogLines.map(function(line){
-    return { id : line.id, type : "dialog-line" };
-  });
-
-  let result = {
-    "data": {
-      "id": element.id,
-      "type" : "dialog",
-      "attributes": {
-        "name": element.name
-      },
-
-      "relationships": {
-        "starting-line": {
-          "data" : {
-            "id": element.startingLine.id,
-            "type": "dialog-line"
-          }
-        },
-
-        "lines": {
-          "data": lines
-        }
-      }
-    },
-  }
-
-  return result;
-}
-
-addDialog = function(object){
-  dialogs.push(object);
-};
 
 
 
@@ -52,12 +7,7 @@ exports.listAllDialogs = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
-  var convertedDialogs = new Array();
-  server.getDialogs().forEach(function(value, key) {
-    convertedDialogs.push(self.createDialogEmberObject(value).data);
-  });
-
-  res.json({ "data": convertedDialogs });
+  res.json({ "data": "Hello" });
 }
 
 
@@ -68,8 +18,11 @@ exports.getDialog = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
-  let dialog = server.getDialog(req.params.dialogId);
-  res.json(self.createDialogEmberObject(dialog));
+
+  server.getDialog(req.params.dialogId).then(dialog => {
+    console.log(dialog);
+    res.json(dialog);    
+  })
 };
 
 exports.updateDialog = function(req, res) {
