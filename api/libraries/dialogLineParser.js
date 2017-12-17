@@ -88,6 +88,8 @@ exports.parse = function(element){
     attributes.set('alreadySaid', already);
   }
 
+  attributes.set('message', element.text);
+
   var connections = undefined;
   if(element.$.connections !== undefined){
 
@@ -115,19 +117,19 @@ exports.parse = function(element){
     relationships.set("connections", { "data" : cons })
 
     // finally create the ember data object
-    let emberObject = emberParser.createEmberObject("dialog-line", id, attributes, relationships);
+
     // inform the parser that a dialog line was parsed. This is needed to inform
     // other dialog lines pointing to the parsed dialog line by a relationship
     // like following / previous line
     addDialogLine(emberObject);
 
 
-    resolve(emberObject);
+
   })
 
 
-
-
+  let emberObject = emberParser.createEmberObject("dialog-line", id, attributes, relationships);
+  resolve(emberObject);
 
 
 

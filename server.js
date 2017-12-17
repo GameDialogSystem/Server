@@ -35,5 +35,4 @@ server.readAllDialogs();
 
 app.listen(port);
 
-
 console.log('UE Dialog RESTful API server started on: ' + port);

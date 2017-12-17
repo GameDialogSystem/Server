@@ -7,7 +7,12 @@ exports.listAllDialogs = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
-  res.json({ "data": "Hello" });
+  var elements = [];
+  server.getDialogs().forEach((value, key, map) => {
+    elements.push(value.data);
+  });
+
+  res.json({ "data" : elements });
 }
 
 
@@ -20,8 +25,7 @@ exports.getDialog = function(req, res) {
 
 
   server.getDialog(req.params.dialogId).then(dialog => {
-    console.log(dialog);
-    res.json(dialog);    
+    res.json(dialog);
   })
 };
 

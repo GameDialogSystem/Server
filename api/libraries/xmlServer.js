@@ -20,7 +20,7 @@ exports.initialize = function(){
 }
 
 exports.getDialogs = function(){
-  return dialogs;
+  return parser.getAllParsedElementsOfATag("dialog");
 }
 
 exports.getDialog = function(id){
@@ -37,19 +37,27 @@ exports.getDialog = function(id){
   })
 }
 
+exports.getDialogLine = function(id){
+  return new Promise((resolve, reject) => {
+    let dialogLine = parser.getParsedElement("dialog_line", id);
+
+    resolve(dialogLine);
+  })
+}
+
 exports.readAllDialogs = function(){
   let self = this;
 
   var files = fs.readdirAsync(directory).map(filename => {
-    return fileUtil.readFile(path.join(directory,filename));
-  }).then(function(content){
-    Promise.map(content, item => {
-      return xmlUtil.parseStringFromFile(item);
-    }).then(list => {
 
-    });
-  });
+    return parser.parseFile(path.join(directory,filename)); //.then(dialog => {
+    //  resolve(dialog);
+    //})
+  })
 
+  files.then(parsedDialogs => {
+    console.log(parser.getAllParsedElementsOfATag("dialog"));
+  })
 }
 
 exports.addLineToDialog = function(dialog, dialogLine){

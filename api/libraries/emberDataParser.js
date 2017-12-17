@@ -28,10 +28,10 @@ exports.createEmberObject = function(model, id, attributes, relationships){
   }
 
   if(relationships !== undefined && relationships.size > 0){
-    object.relationships = {}
+    object.data.relationships = {}
 
-    relationships.forEach(function(value, key, map){
-      object.relationships[key] = value;
+    relationships.forEach((value, key, map) => {
+      object.data.relationships[key] = { "data" : value };
     })
   }
 

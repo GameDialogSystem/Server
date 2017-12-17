@@ -11,10 +11,20 @@ var eventEmitter = new events.EventEmitter();
 */
 var _elementParsers = new Map();
 
+/**
+* This map stores for each parsed tag another map containing all parsed elements
+* with the given tag. To retrieve a single element you need to call
+* parseElements.get("tagName").get("id") where tagName is the tag of the wanted
+* element and id the id of it.
+*/
 var parsedElements = new Map();
 
 exports.getParsedElement = function(tag, id){
-  return parsedElements.get(tag).get(id);
+  return this.getAllParsedElementsOfATag(tag).get(id);
+}
+
+exports.getAllParsedElementsOfATag = function(tag){
+  return parsedElements.get(tag);
 }
 
 
@@ -30,13 +40,14 @@ exports.getParsedElement = function(tag, id){
 getElementParser = function(tagName){
   // inform the user that there is an element without a registered parser
   // that cannot be parsed
-  if(!_elementParsers.has(tagName)){
+  if(!_elementParsers.has(tagName))
+  {
     throw new Error(`There is no element parser registered
       for elements with the tag name "${tagName}"`);
-    }else{
-      return _elementParsers.get(tagName);
-    }
+  }else{
+    return _elementParsers.get(tagName);
   }
+}
 
 
   /**
@@ -61,7 +72,6 @@ getElementParser = function(tagName){
           let tag = Object.keys(result)[0];
 
           self.parseElement(tag, result[tag]).then(element => {
-            console.log(element);
             resolve(element);
           });
         });
@@ -82,10 +92,14 @@ getElementParser = function(tagName){
   exports.parseElement = function(tag, element, resolve, reject){
     let self = this;
 
+    if(typeof element === "string"){
+      return new Promise.resolve(element);
+    }
+
     return new Promise((resolve, reject) => {
       var keys = Object.keys(element);
       keys.splice(keys.indexOf('$'), 1);
-
+      keys.splice(keys.indexOf('_'), 1);
 
       let elementParser = getElementParser(tag);
 
@@ -99,63 +113,14 @@ getElementParser = function(tagName){
         }
       });
 
-      Promise.all(children).then(result => {
-        elementParser.informAboutParsedChildren(result);
+      object.then(result => {
+        this.getAllParsedElementsOfATag(tag).set(result.data.id, result);
 
-        parsedElements.get(tag).set(result.id, result);
-        resolve(object);
-      });
-
-      //resolve();
+        resolve(result);
+      })
     });
-    /*
-    let self = this;
-
-
-
-
-      // try to get a parser for the element
-      let elementParser = getElementParser(tag);
-
-      // only parse single elements. See else branch for handling multiple
-      // elements for one tag name
-      if(!Array.isArray(element)){
-        // parse the element
-        let object = elementParser.parse(element, this);
-
-        console.log("--------->");
-        console.log(tag);
-        console.log(object);
-        console.log("<---------");
-
-        // parse only non-text children
-        if(typeof element === 'object'){
-
-          // parse all contained children within the element
-          let children = Object.keys(element).map(function(key){
-            // only continue with recursively
-            // parsing with non-text xml elements
-
-            if(key !== '$' && key !== '_'){
-              return new Promise(self.parseElement(key, element[key]);
-            }else{
-              return new Promise.resolve(42);
-            }
-          })
-
-          console.log(children);
-        }
-
-      }else{
-
-        // break array apart and call the parseElement function for each
-        // array element
-        element.forEach(function(arrayElement){
-          self.parseElement(tag, arrayElement)
-        })
-      }
-*/
   }
+
 
   /**
   * validateElementParser - validates if a parser contains the needed
@@ -172,6 +137,7 @@ getElementParser = function(tagName){
 
     return hasParse && hasRegisterEventEmitter;
   }
+
 
   /**
   * registerElementParser - registers a parser that will be used to parse xml elements based
@@ -195,7 +161,7 @@ getElementParser = function(tagName){
     // check if the parser implements the needed functionality, reject if not
     if(!validateElementParser(parser)){
       throw new Error(`The parser tried to register for the element "${tagName}"
-        does not contain the methods parse and/or informAboutParsedChildren.`)
+      does not contain the methods parse and/or informAboutParsedChildren.`)
     }
     // only allow to define one parser per element
     if(!_elementParsers.has(tagName)){
@@ -203,7 +169,6 @@ getElementParser = function(tagName){
 
       // add a map to store parsed elements to make them accessable afterwards
       parsedElements.set(tagName, new Map());
-
       // throw an error in case the user wants to register more than one parser
       // for an element.
     } else {
