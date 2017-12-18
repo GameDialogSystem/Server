@@ -56,7 +56,6 @@ exports.readAllDialogs = function(){
   })
 
   files.then(parsedDialogs => {
-    console.log(parser.getAllParsedElementsOfATag("dialog"));
   })
 }
 

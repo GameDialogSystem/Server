@@ -90,45 +90,42 @@ exports.parse = function(element){
 
   attributes.set('message', element.text);
 
-  var connections = undefined;
-  if(element.$.connections !== undefined){
 
-    connections = element.$.connections.split(',');
 
-    connections = connections.map(function(connection){
+  var outgoings = undefined;
+  if(element.$.outgoings !== undefined){
 
-      return new Promise(function(resolve, reject){
+    outgoings = element.$.outgoings.split(',');
 
-        let parsedConnection = connectionParser.connections.get(connection);
+    outgoings = outgoings.map(function(connection){
+      return {
+        "id" : "line" + id + "output"+connection,
+        "type" : "output"
+      };
+    });
 
-        eventEmitter.on('addDialogLineConnection', function(dialogLineConnection){
-          if(connection == dialogLineConnection.data.id){
-            resolve(dialogLineConnection.data);
-          }
-        });
-      });
-    })
-
+    relationships.set("outputs", outgoings);
   }
 
 
-  Promise.all(connections).then(function(cons){
+  var incomings = undefined;
+  if(element.$.incomings !== undefined){
 
-    relationships.set("connections", { "data" : cons })
+    incomings = element.$.incomings.split(',');
 
-    // finally create the ember data object
+    incomings = incomings.map(function(connection){
+      return {
+        "id" : "line" + id + "input"+connection,
+        "type" : "input"
+      };
+    });
 
-    // inform the parser that a dialog line was parsed. This is needed to inform
-    // other dialog lines pointing to the parsed dialog line by a relationship
-    // like following / previous line
-    addDialogLine(emberObject);
-
-
-
-  })
+    relationships.set("inputs", incomings);
+  }
 
 
   let emberObject = emberParser.createEmberObject("dialog-line", id, attributes, relationships);
+
   resolve(emberObject);
 
 
