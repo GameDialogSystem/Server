@@ -16,6 +16,11 @@ addDialogLineConnection = function(dialogLine){
   eventEmitter.emit('addDialogLineConnection', dialogLine);
 }
 
+/**
+* Parses a connection between two dialog lines from a xml object to
+* a JSON API valid object that can be send to the Ember client
+*
+*/
 exports.parse = function(element){
   // wait for both dialog lines to be parsed
   //

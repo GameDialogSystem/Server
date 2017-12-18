@@ -31,35 +31,6 @@ addDialogLine = function(dialogLine){
 }
 
 
-
-/**
- * getDialogLine - description
- *
- * @param  {type} index description
- * @return {type}       description
- */
-getDialogLine = function(index){
-  // create a promise to wait for another dialog line to be parsed
-  return new Promise(function(resolve, reject){
-
-    // the promise waits for an event that is triggered each time a dialog line
-    // was parsed. The event compares the id of the searched dialog line with
-    // the one that was parsed. In case they are equal the promise will be
-    // marked as resolved
-    eventEmitter.on('addDialogLine', function(dialogLine){
-      if(dialogLine.data.id === index){
-        resolve(dialogLine);
-      }
-    });
-
-    // TODO we need an event in case the requested dialog line is not part of
-    // the dialog and therefore we need to mark the promise as rejected
-  }).then(function(dialogLine){
-    return emberParser.convertEmberObjectToEmberRelationship(dialogLine);
-  });
-}
-
-
 /**
  * exports - description
  *
@@ -92,48 +63,34 @@ exports.parse = function(element){
 
   var connections = undefined;
   if(element.$.connections !== undefined){
-
     connections = element.$.connections.split(',');
-
-    connections = connections.map(function(connection){
-
-      return new Promise(function(resolve, reject){
-
-        let parsedConnection = connectionParser.connections.get(connection);
-
-        eventEmitter.on('addDialogLineConnection', function(dialogLineConnection){
-          if(connection == dialogLineConnection.data.id){
-            resolve(dialogLineConnection.data);
-          }
-        });
-      });
-    })
-
   }
 
 
-  Promise.all(connections).then(function(cons){
 
-    relationships.set("connections", { "data" : cons })
+  var connections = connections.map(connection => {
+    if(connection === undefined)
+    return {}
+    return emberParser.createEmberObject("line-connection", connection).data;
+  })
+
+  console.log(connections);
+
+    relationships.set("connections", { "data" : connections })
 
     // finally create the ember data object
 
     // inform the parser that a dialog line was parsed. This is needed to inform
     // other dialog lines pointing to the parsed dialog line by a relationship
     // like following / previous line
-    addDialogLine(emberObject);
 
 
-
-  })
 
 
   let emberObject = emberParser.createEmberObject("dialog-line", id, attributes, relationships);
+
+    addDialogLine(emberObject);
   resolve(emberObject);
-
-
-
-  //return emberObject;
   });
 }
 

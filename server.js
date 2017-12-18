@@ -33,6 +33,10 @@ app.use(function(req, res, next) {
 server.initialize();
 server.readAllDialogs();
 
+server.getDialog(1).then(result => {
+  //server.saveDialog(1);
+})
+
 app.listen(port);
 
 console.log('UE Dialog RESTful API server started on: ' + port);
