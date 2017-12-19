@@ -42,7 +42,10 @@ exports.getDialog = function(id){
     }else{
       parser.parseFile(path.join(directory,"foo.xml")).then(dialog => {
         resolve(dialog);
-      })
+      }, reason => {
+        console.log(reason);
+        reject(reason);
+      });
     }
   })
 }
@@ -71,5 +74,7 @@ exports.readAllDialogs = function(){
 
   files.then(parsedDialogs => {
 
-  })
+  }, reason => {
+
+  });
 }

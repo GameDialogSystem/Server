@@ -97,8 +97,13 @@ exports.parseElement = function(tag, element){
 
   return new Promise((resolve, reject) => {
     var keys = Object.keys(element);
+
     keys.splice(keys.indexOf('$'), 1);
-    keys.splice(keys.indexOf('_'), 1);
+
+    console.log(tag +"  ====> ");
+    console.log(keys);
+
+
 
     let elementParser = getElementParser(tag);
 
@@ -112,11 +117,19 @@ exports.parseElement = function(tag, element){
       }
     });
 
+    Promise.all(children).then(result => {
+      console.log(":)");
+    }, (reject) => {
+      console.log(":(");
+    })
+
     object.then(result => {
       this.getAllParsedElementsOfATag(tag).set(result.data.id, result);
 
       resolve(result);
-    })
+    }, (reject) => {
+      console.log(":'(")
+    });
   });
 }
 

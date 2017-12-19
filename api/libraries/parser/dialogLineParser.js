@@ -38,6 +38,7 @@ addDialogLine = function(dialogLine){
  * @return {type}         description
  */
 exports.parse = function(element){
+
   return new Promise(function(resolve, reject){
   let id = element.$.id;
 
@@ -61,22 +62,34 @@ exports.parse = function(element){
 
   attributes.set('message', element.text);
 
-  var connections = undefined;
-  if(element.$.connections !== undefined){
-    connections = element.$.connections.split(',');
+  var inputs = undefined;
+  if(element.$.inputs !== undefined){
+    inputs = element.$.inputs.split(',');
+  }
+
+  var outputs = undefined;
+  if(element.$.outputs !== undefined){
+    outputs = element.$.outputs.split(',');
+  }
+
+  if(inputs !== undefined){
+    inputs = inputs.map(connection => {
+      return emberParser.createEmberObject("input", "line" + id + "input" + connection).data;
+    })
+
+    relationships.set("inputs", inputs);
+  }
+
+  if(outputs !== undefined){
+    outpus = outputs.map(connection => {
+      return emberParser.createEmberObject("output", "line" + id + "output" + connection).data;
+    })
+
+    relationships.set("outputs", outputs);
   }
 
 
 
-  var connections = connections.map(connection => {
-    if(connection === undefined)
-    return {}
-    return emberParser.createEmberObject("line-connection", connection).data;
-  })
-
-  console.log(connections);
-
-    relationships.set("connections", { "data" : connections })
 
     // finally create the ember data object
 
