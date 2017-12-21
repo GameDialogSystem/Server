@@ -5,9 +5,9 @@
     <text>Hello little Monkey</text>
   </dialog_line>
 
-  <line_connection id="1" input="line2output1" output="line3input1" />
-  <line_connection id="2" input="line2output2" output="line4input2" />
-  <line_connection id="3" input="line2output3" output="line5input3" />
+  <dialog_line_connection id="1" output="line2output1" input="line3input1" />
+  <dialog_line_connection id="2" output="line2output2" input="line4input1" />
+  <dialog_line_connection id="3" output="line2output3" input="line5input1" />
 
   <dialog_line id="3" inputs="line3input1" x="100" y="400">
     <text>Do you want a tasty banana?</text>
