@@ -19,12 +19,21 @@ var _elementParsers = new Map();
 */
 var parsedElements = new Map();
 
+exports.getAllParsedElements = function(){
+  return parsedElements;
+}
+
 exports.getParsedElement = function(tag, id){
   return this.getAllParsedElementsOfATag(tag).get(id);
 }
 
 exports.getAllParsedElementsOfATag = function(tag){
   return parsedElements.get(tag);
+}
+
+exports.addParsedElement = function(tag, object){
+  this.getAllParsedElementsOfATag(tag).set(object.data.id, object);
+  eventEmitter.emit("NewParsedElementAdded", { "tag" : tag, "object" : object });
 }
 
 
@@ -72,6 +81,8 @@ exports.parseFile = function(file, res){
 
         self.parseElement(tag, result[tag]).then(element => {
           resolve(element);
+        }, reject => {
+          console.log(reject);
         });
       });
     });
@@ -100,10 +111,6 @@ exports.parseElement = function(tag, element){
 
     keys.splice(keys.indexOf('$'), 1);
 
-    console.log(tag +"  ====> ");
-    console.log(keys);
-
-
 
     let elementParser = getElementParser(tag);
 
@@ -118,9 +125,8 @@ exports.parseElement = function(tag, element){
     });
 
     Promise.all(children).then(result => {
-      console.log(":)");
     }, (reject) => {
-      console.log(":(");
+      console.log(reject);
     })
 
     object.then(result => {
@@ -128,7 +134,7 @@ exports.parseElement = function(tag, element){
 
       resolve(result);
     }, (reject) => {
-      console.log(":'(")
+      console.log(reject);
     });
   });
 }

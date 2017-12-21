@@ -38,11 +38,13 @@ exports.createEmberObject = function(model, id, attributes, relationships){
   return object;
 }
 
-exports.convertEmberObjectToEmberRelationship = function(emberObject){
+exports.createEmberObjectRelationship = function(model, id){
   return {
-    "data" : {
-      "type" : emberObject.data.type,
-      id : emberObject.data.id
-    }
+      "type" : model,
+      id : id
   }
+}
+
+exports.convertEmberObjectToEmberRelationship = function(emberObject){
+  return createEmberObjectRelationship(emberObject.data.type, emberObject.data.id);
 }
