@@ -28,6 +28,9 @@ exports.parse = function(element, parser){
     var relationships = new Map();
     relationships.set("lines", dialogLines);
 
+    // set starting line
+    relationships.set("starting-line", emberParser.createEmberObject("dialog-line", startingLine).data);
+
     resolve(emberParser.createEmberObject("dialog", id, attributes, relationships));
   });
 }

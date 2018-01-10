@@ -10,5 +10,6 @@ module.exports = function(app) {
   app.route('/dialogs/:dialogId')
     .get(dialogs.getDialog)
     .patch(dialogs.updateDialog)
+    .post(dialogs.saveDialog)
     .delete(dialogs.deleteDialog)
 };
