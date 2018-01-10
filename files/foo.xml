@@ -1,23 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <dialog id="1" name="Bunny Dialog" startingLine="2">
-  <dialog_line id="2" outputs="line2output1,line2output2,line2output3" x="100" y="100">
+  <dialog_line id="2" x="100" y="100">
     <condition>Here goes a condition</condition>
     <text>Hello little Monkey</text>
   </dialog_line>
 
-  <dialog_line_connection id="1" output="line2output1" input="line3input1" />
-  <dialog_line_connection id="2" output="line2output2" input="line4input1" />
-  <dialog_line_connection id="3" output="line2output3" input="line5input1" />
 
-  <dialog_line id="3" inputs="line3input1" x="100" y="400">
-    <text>Do you want a tasty banana?</text>
-  </dialog_line>
-
-  <dialog_line id="4" inputs="line4input1" x="600" y="400">
-    <text>Do you want to play?</text>
-  </dialog_line>
-
-  <dialog_line id="5" inputs="line5input1" x="1100" y="400">
-    <text>Where is your mother?</text>
-  </dialog_line>
 </dialog>
