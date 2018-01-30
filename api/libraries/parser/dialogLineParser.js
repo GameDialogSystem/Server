@@ -26,73 +26,74 @@ exports.registerEventEmitter = function(emitter){
 exports.parse = function(element){
 
   return new Promise(function(resolve, reject){
-  let id = element.$.id;
+    const id = element.$.id;
 
-  var attributes = new Map();
-  var relationships = new Map();
+    let attributes = new Map();
+    let relationships = new Map();
 
-  // set the x coordinate of the position
-  let x = element.$.x;
-  if(x !== undefined){
-    attributes.set('x', x);
-  }
+    // set the x coordinate of the position
+    const x = element.$.x;
+    if(x !== undefined){
+      attributes.set('x', x);
+    }
 
-  // set the y coordinate of the position
-  let y = element.$.y;
-  if(y !== undefined){
-    attributes.set('y', y);
-  }
+    // set the y coordinate of the position
+    const y = element.$.y;
+    if(y !== undefined){
+      attributes.set('y', y);
+    }
 
-  // set the alreadySaid attribute of the dialog line
-  let alreadySaid = element.$.alreadySaid;
-  if(alreadySaid !== undefined){
-    attributes.set('alreadySaid', already);
-  }
+    // set the alreadySaid attribute of the dialog line
+    const alreadySaid = element.$.alreadySaid;
+    if(alreadySaid !== undefined){
+      attributes.set('alreadySaid', already);
+    }
 
-  // set the message of the dialog line
-  attributes.set('message', element.text);
+    // set the message of the dialog line
+    attributes.set('message', element.text);
 
-  // get possible input ids as an array
-  var inputs = undefined;
-  if(element.$.inputs !== undefined){
-    inputs = element.$.inputs.split(',');
-  }
+    // get possible input ids as an array
+    let inputs = undefined;
+    if(element.$.inputs !== undefined){
+      inputs = element.$.inputs.split(',');
+    }
 
-  // get possible output ids as an array
-  var outputs = undefined;
-  if(element.$.outputs !== undefined){
-    outputs = element.$.outputs.split(',');
-  }
+    // get possible output ids as an array
+    let outputs = undefined;
+    if(element.$.outputs !== undefined){
+      outputs = element.$.outputs.split(',');
+    }
 
-  // in case the dialog line has defined inputs create the
-  // relationship in a JSON API format
-  if(inputs !== undefined){
-    let inputObjects = inputs.map(input => {
-      return emberParser.createEmberObject("input", input).data;
-    })
+    // in case the dialog line has defined inputs create the
+    // relationship in a JSON API format
+    if(inputs !== undefined){
+      let inputObjects = inputs.map(input => {
+        return emberParser.createEmberObject("input", input).data;
+      })
 
-    relationships.set("inputs", inputObjects);
-  }
+      relationships.set("inputs", inputObjects);
+    }
 
-  // in case the dialog line has defined outputs create the
-  // relationship in a JSON API format
-  if(outputs !== undefined){
-    let outputObjects = outputs.map(output => {
-      return emberParser.createEmberObject("output", output).data;
-    })
+    // in case the dialog line has defined outputs create the
+    // relationship in a JSON API format
+    if(outputs !== undefined){
+      const outputObjects = outputs.map(output => {
+        return emberParser.createEmberObject("output", output).data;
+      })
 
-    relationships.set("outputs", outputObjects);
-  }
+      relationships.set("outputs", outputObjects);
+    }
 
 
 
     // in case a new element was parsed check if this element is a output
     // or input and verify if this connector belongs to the parsed dialog
     // line. If this is the case set the relationship
+    
     eventEmitter.on('NewParsedElementAdded', object => {
-      let belongsToRelationship = emberParser.createEmberObjectRelationship("dialog-line", id);
+      const belongsToRelationship = emberParser.createEmberObjectRelationship("dialog-line", id);
 
-      var contains = false;
+      let contains = false;
 
       // check outputs
       if(object.tag === "output" && outputs !== undefined){
@@ -111,8 +112,7 @@ exports.parse = function(element){
     });
 
 
-
-  let emberObject = emberParser.createEmberObject("dialog-line", id, attributes, relationships);
+    const emberObject = emberParser.createEmberObject("dialog-line", id, attributes, relationships);
     resolve(emberObject);
   });
 }

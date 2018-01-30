@@ -29,7 +29,7 @@ exports.getDialog = function(req, res) {
   res.header("Access-Control-Allow-Headers", "*");
 
   server.getDialog(req.params.dialogId).then(dialog => {
-    res.json(dialog);
+      res.json(dialog);
   })
 };
 

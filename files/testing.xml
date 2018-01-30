@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <dialog id="1" name="Bunny Dialog" startingLine="2">
-  <dialog_line id="2" x="100" y="100">
-    <condition>Here goes a condition</condition>
-    <text>Hello little Monkey</text>
+  <dialog_line id="2" x="10" y="10">
+    <text>S 0_0</text>
   </dialog_line>
-
-
 </dialog>

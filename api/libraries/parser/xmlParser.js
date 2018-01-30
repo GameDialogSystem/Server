@@ -5,6 +5,7 @@ events = require('events');
 
 var parser = new xml2js.Parser({'async': true});
 var eventEmitter = new events.EventEmitter();
+eventEmitter.setMaxListeners(0);
 
 /**
 * contains all registered element parsers

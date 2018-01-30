@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dialog id="1" name="Bunny Dialog" startingLine="2">
+  <dialog_line id="2" x="10" y="10" outputs="line2output1,line2output2,line2output3">
+    <condition>Here goes a condition 2</condition>
+    <text>S 0_0</text>
+  </dialog_line>
+
+  <dialog_line_connection id="1" output="line2output1" input="line3input1" />
+  <dialog_line_connection id="2" output="line2output2" input="line4input1" />
+  <dialog_line_connection id="3" output="line2output3" input="line5input1" />
+
+  <dialog_line id="3" inputs="line3input1" x="10" y="200">
+    <text>L 0_1</text>
+  </dialog_line>
+
+  <dialog_line id="4" inputs="line4input1" x="610" y="200">
+    <text>L 1_1</text>
+  </dialog_line>
+
+  <dialog_line id="5" inputs="line5input1" outputs="line5output1,line5output2,line5output3" x="1100" y="200">
+    <text>L 2_1</text>
+  </dialog_line>
+
+  <dialog_line_connection id="4" output="line5output1" input="line6input1" />
+  <dialog_line_connection id="5" output="line5output2" input="line7input1" />
+  <dialog_line_connection id="6" output="line5output3" input="line8input1" />
+
+  <dialog_line id="6" inputs="line6input1" x="100" y="400">
+    <text>L 0_2</text>
+  </dialog_line>
+
+  <dialog_line id="7" inputs="line7input1" x="600" y="400">
+    <text>L 1_2</text>
+  </dialog_line>
+
+  <dialog_line id="8" inputs="line8input1" outputs="line8output1,line8output2" x="1100" y="400">
+    <text>L 2_2</text>
+  </dialog_line>
+
+  <dialog_line_connection id="7" output="line8output1" input="line9input1" />
+  <dialog_line_connection id="8" output="line8output2" input="line10input1" />
+
+  <dialog_line id="9" inputs="line9input1" x="600" y="400">
+    <text>L 0_3</text>
+  </dialog_line>
+
+  <dialog_line id="10" inputs="line10input1" x="1100" y="400">
+    <text>L 1_3</text>
+  </dialog_line>
+</dialog>

@@ -42,10 +42,9 @@ exports.getDialog = function(id){
     if(dialog !== undefined){
       resolve(dialog);
     }else{
-      parser.parseFile(path.join(directory,"foo.xml")).then(dialog => {
+      parser.parseFile(path.join(directory,"testing.xml")).then(dialog => {
         resolve(dialog);
       }, reason => {
-        console.log(reason);
         reject(reason);
       });
     }
@@ -54,7 +53,7 @@ exports.getDialog = function(id){
 
 exports.saveDialog = function(id){
   this.getDialog(id).then(result => {
-    builder.buildFile(path.join(directory,"foo.xml"), result)
+    builder.buildFile(path.join(directory,"testing.xml"), result)
   });
 };
 
@@ -73,10 +72,4 @@ exports.readAllDialogs = function(){
   var files = fs.readdirAsync(directory).map(filename => {
     return parser.parseFile(path.join(directory,filename));
   })
-
-  files.then(parsedDialogs => {
-
-  }, reason => {
-    console.log(reason);
-  });
 }
