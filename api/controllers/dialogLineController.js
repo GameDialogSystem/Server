@@ -2,6 +2,7 @@
     xml2js = require('xml2js'),
     server = require('../libraries/xmlServer.js'),
     xmlParser = require("../libraries/parser/xmlParser.js"),
+    emberDataParser = require("../libraries/parser/emberDataParser.js"),
     builder = require('../libraries/builder/xmlBuilder.js');
     path = require('path');
 
@@ -12,6 +13,46 @@ exports.getDialogLine = function(req, res) {
   res.header("Access-Control-Allow-Headers", "*");
 
   server.getDialogLine(req.params.dialogLineId).then(dialogLine => {
+    const data = dialogLine.data;
+    const relationships = data.relationships;
+
+    let inputs = [];
+    let outputs = [];
+
+    if(relationships){
+      if(relationships.inputs){
+        inputs = relationships.inputs.data.map(input => {
+          return emberDataParser.createEmberObject("input", input.data.id).data;
+        });
+
+        dialogLine.data.relationships.inputs = { "data" : inputs };
+      }
+
+      if(relationships.outputs){
+        console.log(relationships.outputs);
+        outputs = relationships.outputs.data.map(output => {
+          return emberDataParser.createEmberObject("output", output.data.id).data;
+        });
+
+        dialogLine.data.relationships.outputs = { "data": outputs };
+      }
+    }
+
+    /*
+    let object = {
+      "dialog-line": {
+        "id": data.id,
+        "x": data.attributes.x,
+        "y": data.attributes.y,
+        "message": data.attributes.message,
+        'inputs': inputs,
+        'outputs': outputs
+      }
+    }
+    */
+
+
+
     res.json(dialogLine);
   });
 };

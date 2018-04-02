@@ -42,10 +42,6 @@ exports.getAllParsedElementsOfATag = function(tag){
 
 exports.addParsedElement = function(tag, object, emit){
   this.getAllParsedElementsOfATag(tag).set(object.data.id, object);
-
-  if(emit === true || emit === undefined){
-    eventEmitter.emit("NewParsedElementAdded", { "tag" : tag, "object" : object });
-  }
 }
 
 
@@ -145,6 +141,7 @@ exports.parseElement = function(tag, element){
     }, (reject) => {
       console.log(reject);
     })
+
 
     object.then(result => {
       this.getAllParsedElementsOfATag(tag).set(result.data.id, result);

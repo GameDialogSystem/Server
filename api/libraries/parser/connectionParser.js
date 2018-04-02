@@ -38,8 +38,10 @@ exports.parse = function(element){
     let outputRelationshipObject = emberParser.createEmberObjectRelationship("output", output);
 
 
-    let inputObject = emberParser.createEmberObject("input", input, undefined, connectorRelationships);
-    let outputObject = emberParser.createEmberObject("output", output, undefined, connectorRelationships);
+    let inputObject = xmlParser.getParsedElement("input", input);
+    let outputObject = xmlParser.getParsedElement("output", output);
+
+
 
     // the connection relationships
     let connectionRelationships = new Map();
@@ -49,8 +51,19 @@ exports.parse = function(element){
     // create the final resulting object
     let emberObject = emberParser.createEmberObject("dialog_line_connection", id, attributes, connectionRelationships);
 
-    xmlParser.addParsedElement("input", inputObject);
-    xmlParser.addParsedElement("output", outputObject);
+    if(inputObject.data.relationships === undefined){
+      inputObject.data.relationships = {}
+    }
+    inputObject.data.relationships.connection = emberObject;
+
+    if(outputObject.data.relationships === undefined){
+      inputObject.data.relationships = {}
+    }
+    outputObject.data.relationships.connection = emberObject;
+
+
+    xmlParser.setParsedElement("input", inputObject.data.id, inputObject);
+    xmlParser.setParsedElement("output", outputObject.data.id, outputObject);
 
     resolve(emberObject);
   });

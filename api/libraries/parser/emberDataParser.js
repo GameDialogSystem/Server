@@ -46,5 +46,5 @@ exports.createEmberObjectRelationship = function(model, id){
 }
 
 exports.convertEmberObjectToEmberRelationship = function(emberObject){
-  return createEmberObjectRelationship(emberObject.data.type, emberObject.data.id);
+  return this.createEmberObjectRelationship(emberObject.data.type, emberObject.data.id);
 }

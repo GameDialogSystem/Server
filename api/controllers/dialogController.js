@@ -28,7 +28,15 @@ exports.getDialog = function(req, res) {
   res.header("Access-Control-Allow-Headers", "*");
 
   server.getDialog(req.params.dialogId).then(dialog => {
-      res.json(dialog);
+    let lines = dialog.data.relationships.lines.data.map(line => { return line.id;});
+    let object = {
+      "dialog": {
+        "id": dialog.data.id,
+        "lines": lines
+      }
+    }
+
+    res.json(dialog);
   }, (reason) => {
     res.status(404).send(`file ${req.params.dialogId} does not exist or is not a valid file`);
   })

@@ -32,7 +32,7 @@ exports.parse = function(element, parser){
     relationships.set("starting-line", emberParser.createEmberObject("dialog-line", startingLine).data);
 
     const parsedElement = emberParser.createEmberObject("dialog", id, attributes, relationships);
-    xmlParser.addParsedElement("dialog", parsedElement, false);
+    xmlParser.addParsedElement("dialog", parsedElement);
 
     resolve(parsedElement);
   });

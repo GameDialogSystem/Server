@@ -1,5 +1,6 @@
 var emberParser = require("./emberDataParser.js");
 var connectionParser = require("./connectionParser.js");
+let xmlParser = require('../parser/xmlParser.js');
 
 var Promise = require("bluebird");
 
@@ -67,51 +68,49 @@ exports.parse = function(element){
     // relationship in a JSON API format
     if(inputs !== undefined){
       let inputObjects = inputs.map(input => {
-        return emberParser.createEmberObject("input", input).data;
+        let inputObject = emberParser.createEmberObject("input", input);
+        xmlParser.addParsedElement("input", inputObject);
+        return inputObject;
       })
 
-      relationships.set("inputs", inputObjects);
+      relationships.set('inputs', inputObjects);
     }
 
     // in case the dialog line has defined outputs create the
     // relationship in a JSON API format
     if(outputs !== undefined){
       const outputObjects = outputs.map(output => {
-        return emberParser.createEmberObject("output", output).data;
+        let outputObject = emberParser.createEmberObject("output", output);
+        xmlParser.addParsedElement("output", outputObject);
+
+
+        return outputObject;
       })
 
-      relationships.set("outputs", outputObjects);
+      relationships.set('outputs', outputObjects);
     }
 
 
+    let emberObject = emberParser.createEmberObject("dialog-line", id, attributes, relationships);
 
-    // in case a new element was parsed check if this element is a output
-    // or input and verify if this connector belongs to the parsed dialog
-    // line. If this is the case set the relationship
+    if(relationships.get("outputs")){
+      relationships.get("outputs").forEach(output => {
+        output.data.relationships = {}
+        output.data.relationships["belongs-to"] = emberParser.convertEmberObjectToEmberRelationship(emberObject);
 
-    eventEmitter.on('NewParsedElementAdded', object => {
-      const belongsToRelationship = emberParser.createEmberObjectRelationship("dialog-line", id);
+        xmlParser.setParsedElement("output", output.data.id, output);
+      })
+    }
 
-      let contains = false;
+    if(relationships.get("inputs")){
+      relationships.get("inputs").forEach(input => {
+        input.data.relationships = {}
+        input.data.relationships["belongs-to"] = emberParser.convertEmberObjectToEmberRelationship(emberObject);
 
-      // check outputs
-      if(object.tag === "output" && outputs !== undefined){
-        contains = outputs.includes(object.object.data.id);
-      }
+        xmlParser.setParsedElement("input", input.data.id, input);
+      })
+    }
 
-      // check inputs
-      if(object.tag === "input" && inputs !== undefined){
-        contains = inputs.includes(object.object.data.id);
-      }
-
-      // modify the object directly to set the belongsTo relationship
-      if(contains){
-        object.object.data.relationships["belongs-to"] = { "data" : belongsToRelationship };
-      }
-    });
-
-
-    const emberObject = emberParser.createEmberObject("dialog-line", id, attributes, relationships);
     resolve(emberObject);
   });
 }

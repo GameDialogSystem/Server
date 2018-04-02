@@ -5,8 +5,23 @@ exports.getConnection = (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
-  let result = xmlParser.getParsedElement("dialog_line_connection", req.params.connectionId);
-  res.json(result);
+  let connection = xmlParser.getParsedElement("dialog_line_connection", req.params.connectionId);
+  const data = connection.data;
+
+  let object = {
+    "connection": {
+      "id": data.id,
+    }
+  }
+
+  const relationships = data.relationships;
+  if(relationships){
+    object.connection["input"] = relationships.input.data.id;
+    object.connection["output"] = relationships.output.data.id;
+  }
+
+  connection.data.type = "connection";
+  res.json(connection);
 };
 
 exports.createConnection = (req, res) => {
