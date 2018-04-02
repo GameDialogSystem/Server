@@ -1,11 +1,10 @@
 exports.build = function(element){
-
   return {
     "dialog" : {
       '$' : {
         "id" : element.data.id,
-        "type" : element.data.type,
-        "name" : element.data.attributes.name
+        "name" : element.data.attributes.name,
+        "starting-line" : element.data.relationships['starting-line'].data.id
       },
     }
   }

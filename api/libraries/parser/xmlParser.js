@@ -20,6 +20,10 @@ var _elementParsers = new Map();
 */
 var parsedElements = new Map();
 
+exports.getEventEmitter = () => {
+  return eventEmitter;
+}
+
 exports.getAllParsedElements = function(){
   return parsedElements;
 }
@@ -28,13 +32,20 @@ exports.getParsedElement = function(tag, id){
   return this.getAllParsedElementsOfATag(tag).get(id);
 }
 
+exports.setParsedElement = function(tag, id, object){
+  this.getAllParsedElementsOfATag(tag).set(id, object);
+}
+
 exports.getAllParsedElementsOfATag = function(tag){
   return parsedElements.get(tag);
 }
 
-exports.addParsedElement = function(tag, object){
+exports.addParsedElement = function(tag, object, emit){
   this.getAllParsedElementsOfATag(tag).set(object.data.id, object);
-  eventEmitter.emit("NewParsedElementAdded", { "tag" : tag, "object" : object });
+
+  if(emit === true || emit === undefined){
+    eventEmitter.emit("NewParsedElementAdded", { "tag" : tag, "object" : object });
+  }
 }
 
 
@@ -72,6 +83,11 @@ exports.parseFile = function(file, res){
   let self = this;
 
   return new Promise((resolve, reject) => {
+    if(!fs.existsSync(file)){
+      reject("File does not exist");
+      return;
+    }
+
     fs.readFile(file, (error, data) => {
       if (error) throw error;
 

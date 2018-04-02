@@ -1,6 +1,6 @@
-var emberParser = require("./emberDataParser.js");
-
-var eventEmitter = undefined;
+const emberParser = require("./emberDataParser.js"),
+      xmlParser = require("../parser/xmlParser.js"),
+      eventEmitter = undefined;
 
 /**
  * exports - parses the xml output and creates an Ember model representation
@@ -15,23 +15,26 @@ exports.parse = function(element, parser){
     let name = element.$.name;
     let startingLine = element.$.startingLine;
 
-    var attributes = new Map();
+    let attributes = new Map();
     if(name !== undefined){
       attributes.set('name', name);
     }
 
 
-    var dialogLines = element.dialog_line.map(line => {
+    const dialogLines = element.dialog_line.map(line => {
       return emberParser.createEmberObject("dialog-line", line.$.id).data;
     })
 
-    var relationships = new Map();
+    let relationships = new Map();
     relationships.set("lines", dialogLines);
 
     // set starting line
     relationships.set("starting-line", emberParser.createEmberObject("dialog-line", startingLine).data);
 
-    resolve(emberParser.createEmberObject("dialog", id, attributes, relationships));
+    const parsedElement = emberParser.createEmberObject("dialog", id, attributes, relationships);
+    xmlParser.addParsedElement("dialog", parsedElement, false);
+
+    resolve(parsedElement);
   });
 }
 

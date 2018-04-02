@@ -19,8 +19,4 @@ exports.buildFileFromObject = function(object, file, success, error){
 
 exports.parseFile = function(file, success){
   return fileUtil.readFile(file)
-
-  //.then(function(result){
-  //  return xml2js.parseStringAsync(result)
-  //});
 }

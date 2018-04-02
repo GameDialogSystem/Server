@@ -7,7 +7,6 @@ var fileUtil = require('../libraries/fileUtility.js'),
 const uuidv5 = require('uuid/v5');
 
 exports.listAllDialogAnswers = function(req, res) {
-  console.log("List All Dialogs");
 };
 
 createDialogAnswerObject = function(dialogAnswer){
@@ -40,7 +39,6 @@ exports.createDialogAnswer = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
-  console.log(req.body);
   //server.addLineToDialog
 };
 

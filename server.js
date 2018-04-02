@@ -10,6 +10,7 @@ var dialogAnswerRoutes = require('./api/routes/dialogAnswerRoutes');
 var inputRoutes = require('./api/routes/inputRoutes');
 var outputRoutes = require('./api/routes/outputRoutes');
 var connectionRoutes = require('./api/routes/connectionRoutes');
+var filesystemRoutes = require('./api/routes/filesystemRoutes')
 
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
@@ -20,6 +21,7 @@ dialogAnswerRoutes(app);
 inputRoutes(app);
 outputRoutes(app);
 connectionRoutes(app);
+filesystemRoutes(app);
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -33,7 +35,7 @@ app.use(function(req, res, next) {
 
 // registers element parsers and initializes the xml server
 server.initialize();
-server.readAllDialogs();
+//server.readAllDialogs();
 
 /*
 server.getDialog(1).then(result => {

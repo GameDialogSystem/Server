@@ -1,9 +1,9 @@
-  var fs = require('fs'),
+  const fs = require('fs'),
     xml2js = require('xml2js'),
     server = require('../libraries/xmlServer.js'),
-    outputController = require('./outputController.js'),
-    uuidv4 = require('uuid/v4'),
-    uuidv5 = require('uuid/v5');
+    xmlParser = require("../libraries/parser/xmlParser.js"),
+    builder = require('../libraries/builder/xmlBuilder.js');
+    path = require('path');
 
 var self = this;
 
@@ -15,3 +15,53 @@ exports.getDialogLine = function(req, res) {
     res.json(dialogLine);
   });
 };
+
+exports.updateDialogLine = (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+
+  const dialogId = req.body.data.relationships.dialog.data.id;
+
+  const dialogLineData = req.body.data;
+  if(dialogId !== undefined){
+    server.getDialog(dialogId).then((result) => {
+
+      // iterate over all dialog lines to find the correct one
+      result.data.relationships.lines.data.forEach((line) => {
+        if(line.id === dialogLineData.id){
+          server.getDialogLine(line.id).then(dialogLine => {
+            // update the message (for now)
+            dialogLine.data.attributes.message = dialogLineData.attributes.message;
+            dialogLine.data.relationships = dialogLineData.relationships;
+
+            // inform server about the made changes
+            server.setDialogLine(line.id, dialogLine).then(dialogLine => {
+              res.json(dialogLine);
+            });
+          });
+        }
+      })
+    }, (error) => {
+      res.json(error);
+    })
+  }else{
+    res.status(404).send(`you modified a dialog line that is unknown for the server.
+      This is most likely a software bug. Please report the problem in order to prevent the error to happening in future
+      versions`);
+  }
+
+  res.json(req.body);
+}
+
+exports.createDialogLine = (req, res) => {
+  const dialogId = req.body.data.relationships.dialog.data.id;
+
+  const dialogLineData = req.body.data;
+  if(dialogId !== undefined){
+    server.getDialog(dialogId).then((result) => {
+      result.data.relationships.lines.data.push(dialogLineData);
+
+      //xmlParser.addParsedElement("dialog_line", req.body);
+    });
+  }
+}

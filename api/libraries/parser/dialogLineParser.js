@@ -24,7 +24,6 @@ exports.registerEventEmitter = function(emitter){
  * @return {type}         description
  */
 exports.parse = function(element){
-
   return new Promise(function(resolve, reject){
     const id = element.$.id;
 
@@ -89,7 +88,7 @@ exports.parse = function(element){
     // in case a new element was parsed check if this element is a output
     // or input and verify if this connector belongs to the parsed dialog
     // line. If this is the case set the relationship
-    
+
     eventEmitter.on('NewParsedElementAdded', object => {
       const belongsToRelationship = emberParser.createEmberObjectRelationship("dialog-line", id);
 

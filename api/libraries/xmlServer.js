@@ -8,9 +8,9 @@ var fileUtil = require('../libraries/fileUtility.js'),
     uuidv4 = require('uuid/v4'),
     uuidv5 = require('uuid/v5'),
     parser = require('./parser/xmlParser.js'),
-    builder = require('./builder/xmlBuilder.js');
+    builder = require('./builder/xmlBuilder.js')
 
-var directory = resolve(__dirname + '/../../files/');
+const directory = resolve(__dirname + '/../../files/');
 
 exports.initialize = function(){
   // register the single element parsers
@@ -29,6 +29,16 @@ exports.initialize = function(){
   builder.registerElementBuilder('dialog_line_connection', require('./builder/connectionBuilder.js'));
   builder.registerElementBuilder('text', require('./builder/textBuilder.js'));
   builder.registerElementBuilder('condition', require('./builder/conditionBuilder.js'));
+
+  parser.getEventEmitter().on('NewParsedElementAdded', object => {
+    saveFile(this.getDialogs().entries().next().value[0]);
+  });
+}
+
+saveFile = (object) => {
+  this.getDialog(object).then(result => {
+    builder.buildFile(path.join(directory,"testing_blub.xml"), result)
+  })
 }
 
 exports.getDialogs = function(){
@@ -42,7 +52,7 @@ exports.getDialog = function(id){
     if(dialog !== undefined){
       resolve(dialog);
     }else{
-      parser.parseFile(path.join(directory,"testing.xml")).then(dialog => {
+      parser.parseFile(path.join(directory, id)).then(dialog => {
         resolve(dialog);
       }, reason => {
         reject(reason);
@@ -50,13 +60,6 @@ exports.getDialog = function(id){
     }
   })
 }
-
-exports.saveDialog = function(id){
-  this.getDialog(id).then(result => {
-    builder.buildFile(path.join(directory,"testing.xml"), result)
-  });
-};
-
 
 exports.getDialogLine = function(id){
   return new Promise((resolve, reject) => {
@@ -66,10 +69,18 @@ exports.getDialogLine = function(id){
   })
 }
 
+exports.setDialogLine = function(id, object){
+  return new Promise((resolve, reject) => {
+    let dialogLine = parser.setParsedElement("dialog_line", id, object);
+
+    resolve(dialogLine);
+  })
+}
+
 exports.readAllDialogs = function(){
   let self = this;
 
-  var files = fs.readdirAsync(directory).map(filename => {
-    return parser.parseFile(path.join(directory,filename));
-  })
+    var files = fs.readdirAsync(directory).map(filename => {
+      return parser.parseFile(path.join(directory,filename));
+    })
 }

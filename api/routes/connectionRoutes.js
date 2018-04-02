@@ -2,6 +2,10 @@
 module.exports = function(app) {
   var connections = require('../controllers/connectionController');
 
-  app.route('/connections/:connectionId')
+  app.route('/dialog-connections')
+    .post(connections.createConnection)
+
+  app.route('/dialog-connections/:connectionId')
     .get(connections.getConnection)
+
 };
