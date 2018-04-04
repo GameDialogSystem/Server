@@ -8,4 +8,5 @@ module.exports = function(app) {
   app.route('/outputs/:outputId')
     .get(outputs.getOutput)
     .delete(outputs.deleteOutput)
+    .patch(outputs.updateOutput)
 };

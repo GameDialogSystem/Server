@@ -13,11 +13,16 @@ exports.createOuput = function(req, res) {
   let dialogLine = xmlParser.getParsedElement("dialog_line", req.body.data.relationships['belongs-to'].data.id);
   if(dialogLine.data.relationships === undefined){
     dialogLine.data.relationships = {}
-    dialogLine.data.relationships.outputs = [];
-    dialogLine.data.relationships.outputs.push(req.body);
   }
-  xmlParser.addParsedElement("output", req.body);
 
+  if(dialogLine.data.relationships.outputs === undefined){
+    dialogLine.data.relationships.outputs = { data : [] };
+  }
+
+  dialogLine.data.relationships.outputs.data.push(req.body);
+
+
+  xmlParser.addParsedElement("output", req.body);
   res.json(req.body);
 };
 /**
@@ -63,33 +68,9 @@ exports.deleteOutput = function(req, res) {
   res.json({ data : {id: req.params.outputId, x: 0, y: 0, type: 'output'} });
 };
 
-exports.createID = function(id, index){
-  return "line" + id + "output" + index;
-};
+exports.updateOutput = function(req, res) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
 
-exports.createOutputJSONAPI = function(id, dialogLineID, connectedInputID){
-  var object = {
-    "id" : id,
-    "type" : "output",
-
-    "relationships" : {
-      "belongs-to" : {
-        "data" : {
-          "id" : dialogLineID,
-          "type" : "dialog-line"
-        }
-      },
-    }
-  }
-
-  if(connectedInputID !== undefined){
-    object.relationships.input = {
-      "data" : {
-        "id" : connectedInputID,
-        "type": "input"
-      }
-    }
-  }
-
-  return object;
+  res.json(req.body);
 }

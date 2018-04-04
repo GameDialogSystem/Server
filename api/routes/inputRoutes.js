@@ -8,4 +8,5 @@ module.exports = function(app) {
   app.route('/inputs/:inputId')
     .get(inputs.getInput)
     .delete(inputs.deleteInput)
+    .patch(inputs.updateInput)
 };

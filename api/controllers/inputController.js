@@ -48,7 +48,26 @@ exports.createInput = function(req, res) {
     req.body.data.type = pluralize.singular(req.body.data.type);
   }
 
-  xmlParser.addParsedElement("input", req.body);
+  let dialogLine = xmlParser.getParsedElement("dialog_line", req.body.data.relationships['belongs-to'].data.id);
+  if(dialogLine.data.relationships === undefined){
+    dialogLine.data.relationships = {}
+  }
 
+  if(dialogLine.data.relationships.inputs === undefined){
+    dialogLine.data.relationships.inputs = { data : [] };
+  }
+
+  dialogLine.data.relationships.inputs.data.push(req.body);
+
+
+  xmlParser.addParsedElement("input", req.body);
   res.json(req.body);
 };
+
+
+exports.updateInput = function(req, res) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+
+  res.json(req.body);
+}
