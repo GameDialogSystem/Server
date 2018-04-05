@@ -13,10 +13,6 @@
     res.header("Access-Control-Allow-Headers", "*");
 
     server.getDialogLine(req.params.dialogLineId).then(dialogLine => {
-      console.log("#=========================================================");
-      console.log(JSON.stringify(dialogLine));
-      console.log("#=========================================================");
-
       const copy = JSON.parse(JSON.stringify(dialogLine));
       const data = copy.data;
       const relationships = Object.assign({}, data.relationships);
@@ -36,9 +32,7 @@
         }
 
         if (relationships.outputs) {
-          console.log(relationships.outputs);
           outputs = relationships.outputs.data.map(output => {
-            console.log(output);
             return emberDataParser.createEmberObject("output", output.data.id).data;
           });
 
@@ -47,19 +41,6 @@
           };
         }
       }
-
-      /*
-      let object = {
-        "dialog-line": {
-          "id": data.id,
-          "x": data.attributes.x,
-          "y": data.attributes.y,
-          "message": data.attributes.message,
-          'inputs': inputs,
-          'outputs': outputs
-        }
-      }
-      */
 
 
 
@@ -111,14 +92,19 @@
   }
 
   exports.createDialogLine = (req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "*");
+
     const dialogId = req.body.data.relationships.dialog.data.id;
 
     const dialogLineData = req.body.data;
     if (dialogId !== undefined) {
       server.getDialog(dialogId).then((result) => {
-        //result.data.relationships.lines.data.push(dialogLineData);
+        result.data.relationships.lines.data.push(dialogLineData);
 
-        //xmlParser.addParsedElement("dialog_line", req.body);
+        xmlParser.addParsedElement("dialog_line", req.body);
       });
     }
+
+    res.json(req.body);
   }

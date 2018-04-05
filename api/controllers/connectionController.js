@@ -27,7 +27,7 @@ exports.getConnection = (req, res) => {
 exports.createConnection = (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
-
+/*
   const inputId = req.body.data.relationships.input.data.id;
   const outputId = req.body.data.relationships.output.data.id;
   let output = xmlParser.getParsedElement("output", outputId);
@@ -40,8 +40,15 @@ exports.createConnection = (req, res) => {
 
   output.data.relationships.connection = req.body;
 
-
+*/
   xmlParser.addParsedElement("dialog_line_connection", req.body);
+
+  res.json(req.body);
+}
+
+exports.updateConnection = (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
 
   res.json(req.body);
 }

@@ -37,16 +37,6 @@ app.use(function(req, res, next) {
 server.initialize();
 //server.readAllDialogs();
 
-/*
-server.getDialog(1).then(result => {
-  result.data.relationships.lines.data.forEach((line) => {
-    const s = server.getDialogLine(line.id);
-    s.then((result) => {
-      console.log(result.data);
-    })
-  });
-})
-*/
 
 app.listen(port);
 

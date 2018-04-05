@@ -12,6 +12,7 @@ exports.getInput = function(req, res) {
   let input = xmlParser.getParsedElement("input", req.params.inputId);
   const data = input.data;
 
+
   let object = {
     "input": {
       "id": data.id,
@@ -23,7 +24,6 @@ exports.getInput = function(req, res) {
     data.relationships.connection = emberDataParser.createEmberObject("connection", relationships.connection.data.id);
   }
 
-  console.log(relationships);
 
 
   res.json(input);
@@ -69,5 +69,5 @@ exports.updateInput = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
-  res.json(req.body);
+  res.status(200).json(req.body);
 }
