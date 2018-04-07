@@ -16,7 +16,7 @@ exports.initialize = function(){
   // register the single element parsers
   parser.registerElementParser('dialog', require('./parser/dialogParser.js'), false);
   parser.registerElementParser('dialog_line', require('./parser/dialogLineParser.js'), true);
-  parser.registerElementParser('dialog_line_connection', require('./parser/connectionParser.js'), false);
+  parser.registerElementParser('connection', require('./parser/connectionParser.js'), false);
   parser.registerElementParser('text', require('./parser/textParser.js'), false);
   parser.registerElementParser('condition', require('./parser/conditionParser.js'), false);
   parser.registerElementParser('input', require('./parser/inputParser.js'), false);
@@ -26,7 +26,7 @@ exports.initialize = function(){
   // element attributes or adding/deleting of elements
   builder.registerElementBuilder('dialog', require('./builder/dialogBuilder.js'));
   builder.registerElementBuilder('dialog-line', require('./builder/dialogLineBuilder.js'));
-  builder.registerElementBuilder('dialog_line_connection', require('./builder/connectionBuilder.js'));
+  builder.registerElementBuilder('connection', require('./builder/connectionBuilder.js'));
   builder.registerElementBuilder('text', require('./builder/textBuilder.js'));
   builder.registerElementBuilder('condition', require('./builder/conditionBuilder.js'));
 

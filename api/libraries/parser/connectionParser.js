@@ -49,7 +49,7 @@ exports.parse = function(element){
     connectionRelationships.set("output", outputRelationshipObject);
 
     // create the final resulting object
-    let emberObject = emberParser.createEmberObject("dialog_line_connection", id, attributes, connectionRelationships);
+    let emberObject = emberParser.createEmberObject("connection", id, attributes, connectionRelationships);
 
     if(inputObject.data.relationships === undefined){
       inputObject.data.relationships = {}
@@ -59,6 +59,12 @@ exports.parse = function(element){
     if(outputObject.data.relationships === undefined){
       inputObject.data.relationships = {}
     }
+
+    if(outputObject.included === undefined){
+      outputObject.included = []
+      outputObject.included.push(emberObject.data);
+    }
+
     outputObject.data.relationships.connection = emberObject;
 
 

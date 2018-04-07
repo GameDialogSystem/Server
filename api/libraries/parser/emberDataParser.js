@@ -8,7 +8,7 @@
  * @param  {Map} attributes description
  * @return {type}            description
  */
-exports.createEmberObject = function(model, id, attributes, relationships){
+exports.createEmberObject = function(model, id, attributes, relationships, includes){
   var object = {
     "data" : {
       "id" : id,
@@ -32,6 +32,14 @@ exports.createEmberObject = function(model, id, attributes, relationships){
 
     relationships.forEach((value, key, map) => {
       object.data.relationships[key] = { "data" : value };
+    })
+  }
+
+  if(includes !== undefined){
+    object.includes = [];
+
+    includes.forEach((value, key, map) => {
+      object.includes.pushBack(value);
     })
   }
 

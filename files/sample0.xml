@@ -5,9 +5,9 @@
     <text>S 0_0</text>
   </dialog_line>
 
-  <dialog_line_connection id="1" output="line2output1" input="line3input1" />
-  <dialog_line_connection id="2" output="line2output2" input="line4input1" />
-  <dialog_line_connection id="3" output="line2output3" input="line5input1" />
+  <connection id="1" output="line2output1" input="line3input1" />
+  <connection id="2" output="line2output2" input="line4input1" />
+  <connection id="3" output="line2output3" input="line5input1" />
 
   <dialog_line id="3" inputs="line3input1" x="10" y="200">
     <text>L 0_1</text>
@@ -21,9 +21,9 @@
     <text>L 2_1</text>
   </dialog_line>
 
-  <dialog_line_connection id="4" output="line5output1" input="line6input1" />
-  <dialog_line_connection id="5" output="line5output2" input="line7input1" />
-  <dialog_line_connection id="6" output="line5output3" input="line8input1" />
+  <connection id="4" output="line5output1" input="line6input1" />
+  <connection id="5" output="line5output2" input="line7input1" />
+  <connection id="6" output="line5output3" input="line8input1" />
 
   <dialog_line id="6" inputs="line6input1" x="100" y="400">
     <text>L 0_2</text>
@@ -37,8 +37,8 @@
     <text>L 2_2</text>
   </dialog_line>
 
-  <dialog_line_connection id="7" output="line8output1" input="line9input1" />
-  <dialog_line_connection id="8" output="line8output2" input="line10input1" />
+  <connection id="7" output="line8output1" input="line9input1" />
+  <connection id="8" output="line8output2" input="line10input1" />
 
   <dialog_line id="9" inputs="line9input1" x="600" y="400">
     <text>L 0_3</text>

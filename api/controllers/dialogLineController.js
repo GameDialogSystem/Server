@@ -65,8 +65,6 @@
             server.getDialogLine(line.id).then(dialogLine => {
               // update the message (for now)
               dialogLine.data.attributes.message = dialogLineData.attributes.message;
-              //console.log(dialogLine.data.relationships);
-              //console.log(dialogLineData.relationships);
               //dialogLine.data.relationships = dialogLineData.relationships;
 
               // inform server about the made changes

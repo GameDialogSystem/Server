@@ -35,14 +35,6 @@ exports.getOutput = function(req, res) {
   let output = xmlParser.getParsedElement("output", req.params.outputId);
   const data = output.data;
 
-  let object = {
-    "output": {
-      "id": data.id,
-      "belongs-to": data.relationships['belongs-to'].id
-    }
-  }
-
-
   const relationships = data.relationships;
   if(relationships && relationships.connection){
     data.relationships.connection = emberDataParser.createEmberObject("connection", relationships.connection.data.id);

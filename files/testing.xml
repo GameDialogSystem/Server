@@ -10,6 +10,6 @@
     <text>Second line</text>
   </dialog_line>
 
-  <dialog_line_connection id="1" input="i1" output="o1" />
+  <connection id="1" input="i1" output="o1" />
 
 </dialog>
