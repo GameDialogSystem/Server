@@ -9,6 +9,5 @@ module.exports = function(app) {
   app.route('/dialog-lines/:dialogLineId')
     .get(dialogLines.getDialogLine)
     .patch(dialogLines.updateDialogLine)
-
-    //.delete(dialogLines.deleteDialogLine)
+    .delete(dialogLines.deleteDialogLine)
 };

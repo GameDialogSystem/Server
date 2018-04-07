@@ -37,5 +37,12 @@ exports.parse = function(element){
   });
 }
 
-exports.informAboutParsedChildren = function(){
+exports.informAboutParsedChildren = function(object, children){
+  object.then(dialog => {
+    children.forEach(child => {
+      if(child.data.type === 'dialog-line'){
+        child.data.relationships['belongs-to'] = emberParser.convertEmberObjectToEmberRelationship(dialog);
+      }
+    });
+  })
 }

@@ -8,5 +8,5 @@ module.exports = function(app) {
   app.route('/connections/:connectionId')
     .get(connections.getConnection)
     .patch(connections.updateConnection)
-
+    .delete(connections.deleteConnection)
 };

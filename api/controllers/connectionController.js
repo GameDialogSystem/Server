@@ -28,8 +28,6 @@ exports.createConnection = (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
-  console.log(req.body);
-
   const outputId = req.body.data.relationships.output.data.id;
 
   let output = xmlParser.getParsedElement("output", outputId);
@@ -49,3 +47,15 @@ exports.updateConnection = (req, res) => {
 
   res.json(req.body);
 }
+
+exports.deleteConnection = function(req, res) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+
+  const id = req.params.connectionId;
+  if(xmlParser.removeParsedElement("connection", id)){
+    res.json({ data : {id: id,  type: 'connection'} });
+  }else{
+    res.status(400);
+  }
+};

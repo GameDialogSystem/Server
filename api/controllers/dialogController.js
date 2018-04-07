@@ -1,4 +1,5 @@
 const server = require("../libraries/xmlServer.js");
+const xmlParser = require("../libraries/parser/xmlParser.js");
 
 exports.listAllDialogs = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -39,6 +40,14 @@ exports.updateDialog = function(req, res) {
   res.json(req.body);
 };
 
-exports.deleteDialog = function() {
+exports.deleteDialog = function(req, res) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
 
+  const object = xmlParser.removeParsedElement("dialog_line", req.params.dialogId);
+  if(object === undefined){
+    res.status(400);
+  }else{
+    res.json(object);
+  }
 };

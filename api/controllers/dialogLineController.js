@@ -42,7 +42,7 @@ const server = require('../libraries/xmlServer.js'),
     });
   };
 
-  exports.updateDialogLine = (req, res) => {
+  exports.updateDialogLine = function(req, res) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "*");
 
@@ -83,7 +83,7 @@ const server = require('../libraries/xmlServer.js'),
     res.json(req.body);
   }
 
-  exports.createDialogLine = (req, res) => {
+  exports.createDialogLine = function(req, res) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "*");
 
@@ -100,3 +100,24 @@ const server = require('../libraries/xmlServer.js'),
 
     res.json(req.body);
   }
+
+  exports.deleteDialogLine = function(req, res) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "*");
+
+    const id = req.params.dialogLineId;
+    const object = xmlParser.removeParsedElement("dialog_line", id);
+    const dialog = xmlParser.getParsedElement('dialog', object.data.relationships['belongs-to'].id);
+    let relationships = dialog.data.relationships.lines.data;
+    const index = relationships.findIndex(dialogLine => {
+      return dialogLine.id === id;
+    });
+
+    relationships = relationships.splice(index, index+1);
+
+    if(object === undefined){
+      res.status(400);
+    }else{
+      res.json({ data : {id: req.params.dialogLineId,  type: 'dialog-line'} });
+    }
+  };
