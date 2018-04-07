@@ -25,7 +25,7 @@ exports.buildElement = function(element){
 
   const builder = elementBuilders.get(tag);
 
-  
+
 
   const xmlFormat = builder.build(element);
 
@@ -33,7 +33,7 @@ exports.buildElement = function(element){
     let children = (element.data.relationships[key]).data;
 
     if(children.map !== undefined){
-      let xmlChildren = children.map(child => {
+      children.map(child => {
         if(pluralize.isPlural(child.type)){
           child.type = pluralize.singular(child.type);
         }
@@ -50,7 +50,6 @@ exports.buildElement = function(element){
       })
 
       children.forEach(child => {
-
         let c = xmlParser.getParsedElement(child.type.replace('-', '_'), child.id);
         if(c !== undefined){
           this.buildElement(c);
@@ -90,7 +89,7 @@ exports.buildElement = function(element){
 
 }
 
-exports.buildFile = function(file, rootElement, res){
+exports.buildFile = function(file, rootElement){
   const result = this.buildElement(rootElement);
 
   fs.writeFile(file, result, (err) => {

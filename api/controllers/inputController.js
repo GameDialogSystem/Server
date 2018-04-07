@@ -12,19 +12,10 @@ exports.getInput = function(req, res) {
   let input = xmlParser.getParsedElement("input", req.params.inputId);
   const data = input.data;
 
-
-  let object = {
-    "input": {
-      "id": data.id,
-    }
-  }
-
   const relationships = data.relationships;
   if(relationships){
     data.relationships.connection = emberDataParser.createEmberObject("connection", relationships.connection.data.id);
   }
-
-
 
   res.json(input);
 };

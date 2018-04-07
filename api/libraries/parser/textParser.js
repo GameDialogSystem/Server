@@ -1,9 +1,9 @@
 exports.parse = function(element){
-  return new Promise(function(resolve, reject){
+  return new Promise(function(resolve){
     resolve(element);
   });
 }
 
-exports.informAboutParsedChildren = function(children){
+exports.informAboutParsedChildren = function(){
 
 }

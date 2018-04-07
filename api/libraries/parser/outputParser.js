@@ -1,7 +1,7 @@
-exports.parse = function(element){
+exports.parse = function(){
 
 }
 
-exports.informAboutParsedChildren = function(children){
+exports.informAboutParsedChildren = function(){
 
 }

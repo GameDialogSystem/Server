@@ -6,7 +6,7 @@ exports.parseStringFromFile = function(string){
   return xml2js.parseStringAsync(string);
 }
 
-exports.buildFileFromObject = function(object, file, success, error){
+exports.buildFileFromObject = function(object, file){
   var builder = new xml2js.Builder();
   var xml = builder.buildObject(object);
 

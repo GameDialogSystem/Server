@@ -10,7 +10,7 @@ dirTree = function(folder) {
     const stat = fs.statAsync(folder + "/" + fileName);
     const extension = path.extname(fileName);
 
-    return join(stat, function(stat, contents) {
+    return join(stat, function(stat) {
       return {
         lastAccessTimestamp: stat.atimeMs,
         lastModifiedTimestamp: stat.mtimeMs,

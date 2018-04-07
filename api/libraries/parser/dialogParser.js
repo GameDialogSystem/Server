@@ -1,6 +1,5 @@
 const emberParser = require("./emberDataParser.js"),
-      xmlParser = require("../parser/xmlParser.js"),
-      eventEmitter = undefined;
+      xmlParser = require("../parser/xmlParser.js");
 
 /**
  * exports - parses the xml output and creates an Ember model representation
@@ -9,8 +8,8 @@ const emberParser = require("./emberDataParser.js"),
  * @param  {object} element the xml object that is about to be transformed
  * @return {object}         model representation of a dialog line as a JSON API object
  */
-exports.parse = function(element, parser){
-  return new Promise(function(resolve, reject){
+exports.parse = function(element){
+  return new Promise(function(resolve){
     let id = element.$.id;
     let name = element.$.name;
     let startingLine = element.$.startingLine;
@@ -43,9 +42,5 @@ exports.informAboutParsedChildren = function(children){
       if(e === undefined) return false;
 
       return (e.data.type === "dialog-line");
-    })
-
-    let dialogLineRelationships = dialogLines.map(line => {
-      return emberParser.convertEmberObjectToEmberRelationship(line);
     })
 }

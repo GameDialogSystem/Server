@@ -1,14 +1,9 @@
-var fileUtil = require('../libraries/fileUtility.js'),
-    xmlUtil = require('../libraries/xmlUtility.js'),
-    Promise = require("bluebird"),
-    fs = require('fs'),
-    path = require('path'),
-    resolve = require('path').resolve,
-    xml2js = require('xml2js'),
-    uuidv4 = require('uuid/v4'),
-    uuidv5 = require('uuid/v5'),
-    parser = require('./parser/xmlParser.js'),
-    builder = require('./builder/xmlBuilder.js')
+const Promise = require("bluebird"),
+      fs = require('fs'),
+      path = require('path'),
+      resolve = require('path').resolve,
+      parser = require('./parser/xmlParser.js'),
+      builder = require('./builder/xmlBuilder.js')
 
 const directory = resolve(__dirname + '/../../files/');
 
@@ -30,7 +25,7 @@ exports.initialize = function(){
   builder.registerElementBuilder('text', require('./builder/textBuilder.js'));
   builder.registerElementBuilder('condition', require('./builder/conditionBuilder.js'));
 
-  parser.getEventEmitter().on('NewParsedElementAdded', object => {
+  parser.getEventEmitter().on('NewParsedElementAdded', () => {
     saveFile(this.getDialogs().entries().next().value[0]);
   });
 }
@@ -75,12 +70,4 @@ exports.setDialogLine = function(id, object){
 
     resolve(dialogLine);
   })
-}
-
-exports.readAllDialogs = function(){
-  let self = this;
-
-    var files = fs.readdirAsync(directory).map(filename => {
-      return parser.parseFile(path.join(directory,filename));
-    })
 }

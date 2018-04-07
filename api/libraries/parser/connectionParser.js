@@ -1,15 +1,7 @@
 var xmlParser = require("./xmlParser.js");
 var emberParser = require("./emberDataParser.js");
 
-let self = this;
-
 exports.connections = new Map();
-
-var eventEmitter = undefined;
-
-exports.registerEventEmitter = function(emitter){
-  eventEmitter = emitter;
-}
 
 /**
 * Parses a connection between two dialog lines from a xml object to
@@ -17,7 +9,7 @@ exports.registerEventEmitter = function(emitter){
 *
 */
 exports.parse = function(element){
-  return new Promise(function(resolve, reject){
+  return new Promise(function(resolve){
     let id = element.$.id;
     let input = element.$.input;
     let output = element.$.output;
@@ -74,5 +66,5 @@ exports.parse = function(element){
     resolve(emberObject);
   });
 }
-exports.informAboutParsedChildren = function(children){
+exports.informAboutParsedChildren = function(){
 }

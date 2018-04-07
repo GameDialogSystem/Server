@@ -22,7 +22,7 @@ exports.createEmberObject = function(model, id, attributes, relationships, inclu
     object.data.attributes = {}
 
     // add all attributes to the element model
-    attributes.forEach(function(value, key, map){
+    attributes.forEach(function(value, key){
       object.data.attributes[key] = value;
     })
   }
@@ -30,7 +30,7 @@ exports.createEmberObject = function(model, id, attributes, relationships, inclu
   if(relationships !== undefined && relationships.size > 0){
     object.data.relationships = {}
 
-    relationships.forEach((value, key, map) => {
+    relationships.forEach((value, key) => {
       object.data.relationships[key] = { "data" : value };
     })
   }
@@ -38,7 +38,7 @@ exports.createEmberObject = function(model, id, attributes, relationships, inclu
   if(includes !== undefined){
     object.includes = [];
 
-    includes.forEach((value, key, map) => {
+    includes.forEach((value, key) => {
       object.includes.pushBack(value);
     })
   }

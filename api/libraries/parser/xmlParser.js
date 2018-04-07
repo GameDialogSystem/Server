@@ -40,7 +40,7 @@ exports.getAllParsedElementsOfATag = function(tag){
   return parsedElements.get(tag);
 }
 
-exports.addParsedElement = function(tag, object, emit){
+exports.addParsedElement = function(tag, object){
   this.getAllParsedElementsOfATag(tag).set(object.data.id, object);
 }
 
@@ -75,7 +75,7 @@ getElementParser = function(tagName){
   * @param  {string} file relative path to the xml that is going to be parsed
   * @return {type}      description
   */
-exports.parseFile = function(file, res){
+exports.parseFile = function(file){
   let self = this;
 
   return new Promise((resolve, reject) => {
@@ -137,7 +137,7 @@ exports.parseElement = function(tag, element){
       }
     });
 
-    Promise.all(children).then(result => {
+    Promise.all(children).then(() => {
     }, (reject) => {
       console.log(reject);
     })

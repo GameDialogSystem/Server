@@ -1,12 +1,7 @@
-  const fs = require('fs'),
-    xml2js = require('xml2js'),
-    server = require('../libraries/xmlServer.js'),
+const server = require('../libraries/xmlServer.js'),
     xmlParser = require("../libraries/parser/xmlParser.js"),
     emberDataParser = require("../libraries/parser/emberDataParser.js"),
-    builder = require('../libraries/builder/xmlBuilder.js');
-  path = require('path');
-
-  var self = this;
+    path = require('path');
 
   exports.getDialogLine = function(req, res) {
     res.header("Access-Control-Allow-Origin", "*");

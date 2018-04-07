@@ -6,7 +6,6 @@ var express = require('express'),
 
 var dialogRoutes = require('./api/routes/dialogRoutes');
 var dialogLineRoutes = require('./api/routes/dialogLineRoutes');
-var dialogAnswerRoutes = require('./api/routes/dialogAnswerRoutes');
 var inputRoutes = require('./api/routes/inputRoutes');
 var outputRoutes = require('./api/routes/outputRoutes');
 var connectionRoutes = require('./api/routes/connectionRoutes');
@@ -17,7 +16,6 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 // register the routes
 dialogRoutes(app);
 dialogLineRoutes(app);
-dialogAnswerRoutes(app);
 inputRoutes(app);
 outputRoutes(app);
 connectionRoutes(app);

@@ -1,17 +1,6 @@
-var emberParser = require("./emberDataParser.js");
-var connectionParser = require("./connectionParser.js");
-let xmlParser = require('../parser/xmlParser.js');
-
-var Promise = require("bluebird");
-
-var eventEmitter = undefined;
-
-var self = this;
-
-/**
-*
-*/
-var pendingRelationships = new Map();
+const emberParser = require("./emberDataParser.js");
+const xmlParser = require('../parser/xmlParser.js');
+const Promise = require("bluebird");
 
 exports.registerEventEmitter = function(emitter){
   eventEmitter = emitter;
@@ -25,7 +14,7 @@ exports.registerEventEmitter = function(emitter){
  * @return {type}         description
  */
 exports.parse = function(element){
-  return new Promise(function(resolve, reject){
+  return new Promise(function(resolve){
     const id = element.$.id;
 
     let attributes = new Map();
@@ -115,5 +104,5 @@ exports.parse = function(element){
   });
 }
 
-exports.informAboutParsedChildren = function(children){
+exports.informAboutParsedChildren = function(){
 }
