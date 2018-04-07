@@ -6,7 +6,7 @@ var Promise = require("bluebird");
 var join = Promise.join;
 
 dirTree = function(folder) {
-  return fs.readdirAsync(folder).map(function(fileName) {
+  return fs.readdirAsync(folder).map((fileName) => {
     const stat = fs.statAsync(folder + "/" + fileName);
     const extension = path.extname(fileName);
 

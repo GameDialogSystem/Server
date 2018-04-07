@@ -9,7 +9,7 @@ exports.connections = new Map();
 *
 */
 exports.parse = function(element){
-  return new Promise(function(resolve){
+  return new Promise((resolve) => {
     let id = element.$.id;
     let input = element.$.input;
     let output = element.$.output;

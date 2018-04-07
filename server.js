@@ -21,7 +21,7 @@ outputRoutes(app);
 connectionRoutes(app);
 filesystemRoutes(app);
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
   res.header("Access-Control-Allow-Credentials", "true");

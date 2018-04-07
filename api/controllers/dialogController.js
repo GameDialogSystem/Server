@@ -5,7 +5,7 @@ exports.listAllDialogs = function(req, res) {
   res.header("Access-Control-Allow-Headers", "*");
 
   var elements = [];
-  server.getDialogs().forEach((value, key) => {
+  server.getDialogs().forEach((value) => {
     elements.push(value.data);
   });
 
@@ -39,6 +39,6 @@ exports.updateDialog = function(req, res) {
   res.json(req.body);
 };
 
-exports.deleteDialog = function(req, res) {
+exports.deleteDialog = function() {
 
 };

@@ -1,7 +1,6 @@
 const server = require('../libraries/xmlServer.js'),
     xmlParser = require("../libraries/parser/xmlParser.js"),
-    emberDataParser = require("../libraries/parser/emberDataParser.js"),
-    path = require('path');
+    emberDataParser = require("../libraries/parser/emberDataParser.js");
 
   exports.getDialogLine = function(req, res) {
     res.header("Access-Control-Allow-Origin", "*");

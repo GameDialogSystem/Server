@@ -17,6 +17,6 @@ exports.buildFileFromObject = function(object, file){
   });
 }
 
-exports.parseFile = function(file, success){
+exports.parseFile = function(file){
   return fileUtil.readFile(file)
 }

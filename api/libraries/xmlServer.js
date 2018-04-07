@@ -1,5 +1,4 @@
 const Promise = require("bluebird"),
-      fs = require('fs'),
       path = require('path'),
       resolve = require('path').resolve,
       parser = require('./parser/xmlParser.js'),
@@ -57,7 +56,7 @@ exports.getDialog = function(id){
 }
 
 exports.getDialogLine = function(id){
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let dialogLine = parser.getParsedElement("dialog_line", id);
 
     resolve(dialogLine);
@@ -65,7 +64,7 @@ exports.getDialogLine = function(id){
 }
 
 exports.setDialogLine = function(id, object){
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let dialogLine = parser.setParsedElement("dialog_line", id, object);
 
     resolve(dialogLine);

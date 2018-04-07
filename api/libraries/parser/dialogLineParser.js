@@ -14,7 +14,7 @@ exports.registerEventEmitter = function(emitter){
  * @return {type}         description
  */
 exports.parse = function(element){
-  return new Promise(function(resolve){
+  return new Promise((resolve) => {
     const id = element.$.id;
 
     let attributes = new Map();

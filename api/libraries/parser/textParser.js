@@ -1,5 +1,5 @@
 exports.parse = function(element){
-  return new Promise(function(resolve){
+  return new Promise((resolve) => {
     resolve(element);
   });
 }

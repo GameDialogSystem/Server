@@ -22,7 +22,7 @@ exports.createEmberObject = function(model, id, attributes, relationships, inclu
     object.data.attributes = {}
 
     // add all attributes to the element model
-    attributes.forEach(function(value, key){
+    attributes.forEach((value, key) => {
       object.data.attributes[key] = value;
     })
   }
@@ -38,7 +38,7 @@ exports.createEmberObject = function(model, id, attributes, relationships, inclu
   if(includes !== undefined){
     object.includes = [];
 
-    includes.forEach((value, key) => {
+    includes.forEach((value) => {
       object.includes.pushBack(value);
     })
   }

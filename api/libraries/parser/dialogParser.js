@@ -9,7 +9,7 @@ const emberParser = require("./emberDataParser.js"),
  * @return {object}         model representation of a dialog line as a JSON API object
  */
 exports.parse = function(element){
-  return new Promise(function(resolve){
+  return new Promise((resolve) => {
     let id = element.$.id;
     let name = element.$.name;
     let startingLine = element.$.startingLine;
@@ -38,7 +38,7 @@ exports.parse = function(element){
 }
 
 exports.informAboutParsedChildren = function(children){
-    let dialogLines = children.filter(function(e){
+    let dialogLines = children.filter((e) => {
       if(e === undefined) return false;
 
       return (e.data.type === "dialog-line");
