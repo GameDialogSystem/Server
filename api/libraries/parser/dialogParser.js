@@ -37,10 +37,5 @@ exports.parse = function(element){
   });
 }
 
-exports.informAboutParsedChildren = function(children){
-    let dialogLines = children.filter((e) => {
-      if(e === undefined) return false;
-
-      return (e.data.type === "dialog-line");
-    })
+exports.informAboutParsedChildren = function(){
 }
