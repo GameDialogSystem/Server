@@ -1,7 +1,7 @@
 {
   "name": "uedialogserver",
   "version": "1.0.0",
-  "description": "Unreal Engine dialog server for saving dialogs",
+  "description": "Backend server to load and save XML based dialog files.",
   "main": "index.js",
   "scripts": {
     "test": "nyc mocha",
