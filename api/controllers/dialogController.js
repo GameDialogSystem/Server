@@ -15,11 +15,11 @@ exports.listAllDialogs = function(req, res) {
 
 
 exports.createDialog = function() {
-
+  console.log("BLUB");
 };
 
 exports.saveDialog = function(req, res) {
-  res.json({ "data" : elements });
+  res.json(res.body);
 };
 
 exports.getDialog = function(req, res) {
@@ -44,9 +44,9 @@ exports.deleteDialog = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
-  const object = xmlParser.removeParsedElement("dialog_line", req.params.dialogId);
+  const object = xmlParser.removeParsedElement("dialog", req.params.dialogId);
   if(object === undefined){
-    res.status(400);
+    res.status(400).send();
   }else{
     res.json(object);
   }

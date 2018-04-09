@@ -14,7 +14,11 @@ exports.registerEventEmitter = function(emitter){
  * @return {type}         description
  */
 exports.parse = function(element){
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    if(element.$ === undefined){
+      reject("XML file has no defined id");
+    }
+
     const id = element.$.id;
 
     let attributes = new Map();
@@ -30,12 +34,6 @@ exports.parse = function(element){
     const y = element.$.y;
     if(y !== undefined){
       attributes.set('y', y);
-    }
-
-    // set the alreadySaid attribute of the dialog line
-    const alreadySaid = element.$.alreadySaid;
-    if(alreadySaid !== undefined){
-      attributes.set('alreadySaid', already);
     }
 
     // set the message of the dialog line
@@ -85,7 +83,7 @@ exports.parse = function(element){
     if(relationships.get("outputs")){
       relationships.get("outputs").forEach(output => {
         output.data.relationships = {}
-        output.data.relationships["belongs-to"] = emberParser.convertEmberObjectToEmberRelationship(emberObject);
+        output.data.relationships["belongs-to"] = { "data" : emberParser.convertEmberObjectToEmberRelationship(emberObject) };
 
         xmlParser.setParsedElement("output", output.data.id, output);
       })

@@ -26,6 +26,7 @@ const server = require('../libraries/xmlServer.js'),
         }
 
         if (relationships.outputs) {
+
           outputs = relationships.outputs.data.map(output => {
             return emberDataParser.createEmberObject("output", output.data.id).data;
           });
@@ -33,6 +34,7 @@ const server = require('../libraries/xmlServer.js'),
           copy.data.relationships.outputs = {
             "data": outputs
           };
+          
         }
       }
 
@@ -86,13 +88,14 @@ const server = require('../libraries/xmlServer.js'),
   exports.createDialogLine = function(req, res) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "*");
+    const data = req.body.data;
+    const dialogId = data.relationships.dialog.data.id;
 
-    const dialogId = req.body.data.relationships.dialog.data.id;
+    data.relationships.dialog = data.relationships.dialog.data;
 
-    const dialogLineData = req.body.data;
     if (dialogId !== undefined) {
       server.getDialog(dialogId).then((result) => {
-        result.data.relationships.lines.data.push(dialogLineData);
+        result.data.relationships.lines.data.push(data);
 
         xmlParser.addParsedElement("dialog_line", req.body);
       });
@@ -107,7 +110,9 @@ const server = require('../libraries/xmlServer.js'),
 
     const id = req.params.dialogLineId;
     const object = xmlParser.removeParsedElement("dialog_line", id);
-    const dialog = xmlParser.getParsedElement('dialog', object.data.relationships['belongs-to'].id);
+
+    const dialog = xmlParser.getParsedElement('dialog', object.data.relationships.dialog.id);
+
     let relationships = dialog.data.relationships.lines.data;
     const index = relationships.findIndex(dialogLine => {
       return dialogLine.id === id;

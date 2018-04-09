@@ -39,7 +39,7 @@ exports.createEmberObject = function(model, id, attributes, relationships, inclu
     object.includes = [];
 
     includes.forEach((value) => {
-      object.includes.pushBack(value);
+      object.includes.push(value);
     })
   }
 

@@ -26,10 +26,6 @@ exports.getEventEmitter = () => {
   return eventEmitter;
 }
 
-exports.getAllParsedElements = function() {
-  return parsedElements;
-}
-
 exports.getParsedElement = function(tag, id) {
   return this.getAllParsedElementsOfATag(tag).get(id);
 }
@@ -70,8 +66,7 @@ getElementParser = function(tagName) {
   // inform the user that there is an element without a registered parser
   // that cannot be parsed
   if (!_elementParsers.has(tagName)) {
-    throw new Error(`There is no element parser registered
-      for elements with the tag name "${tagName}"`);
+    throw new Error(`There is no element parser registered for elements with the tag name "${tagName}"`);
   } else {
     return _elementParsers.get(tagName);
   }
@@ -136,10 +131,16 @@ exports.parseElement = function(tag, element) {
     keys.splice(keys.indexOf('$'), 1);
 
 
-    let elementParser = getElementParser(tag);
+    let elementParser = null;
+    try {
+      elementParser = getElementParser(tag);
+    } catch (e) {
+      reject(e.message);
+    }
 
     let object = elementParser.parse(element, this);
     var children = [];
+
     keys.forEach((key) => {
       if (Array.isArray(element[key])) {
         element[key].forEach((child) => {
@@ -153,7 +154,6 @@ exports.parseElement = function(tag, element) {
     }, (reject) => {
       console.log(reject);
     })
-
 
     object.then(result => {
       this.getAllParsedElementsOfATag(tag).set(result.data.id, result);
@@ -204,8 +204,7 @@ exports.registerElementParser = function(tagName, parser, registerEventEmitter) 
 
   // check if the parser implements the needed functionality, reject if not
   if (!validateElementParser(parser)) {
-    throw new Error(`The parser tried to register for the element "${tagName}"
-    does not contain the methods parse and/or informAboutParsedChildren.`)
+    throw new Error(`The parser tried to register for the element "${tagName}" does not contain the methods parse and/or informAboutParsedChildren.`)
   }
 
   // only allow to define one parser per element
@@ -217,7 +216,6 @@ exports.registerElementParser = function(tagName, parser, registerEventEmitter) 
     // throw an error in case the user wants to register more than one parser
     // for an element.
   } else {
-    throw new Error(`There is already an element parser
-      registered for "${tagName}" elements.`);
+    throw new Error(`There is already an element parser registered for "${tagName}" elements.`);
   }
 }

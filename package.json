@@ -4,7 +4,7 @@
   "description": "Unreal Engine dialog server for saving dialogs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "nyc mocha",
     "start": "nodemon server.js"
   },
   "repository": {
@@ -26,11 +26,14 @@
   },
   "homepage": "https://github.com/gilengel/ue-dialog-server#readme",
   "devDependencies": {
-    "nodemon": "^1.12.1"
+    "nodemon": "^1.12.1",
+    "nyc": "^11.6.0"
   },
   "dependencies": {
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
     "express": "^4.16.2",
     "npm": "^5.7.1",
     "pluralize": "^7.0.0",

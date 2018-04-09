@@ -15,8 +15,7 @@ exports.registerElementBuilder = function(tag, builder){
     // throw an error in case the user wants to register more than one parser
     // for an element.
   } else {
-    throw new Error(`There is already an element parser
-      registered for "${tagName}" elements.`);
+    throw new Error(`There is already an element parser registered for "${tagName}" elements.`);
   }
 }
 
