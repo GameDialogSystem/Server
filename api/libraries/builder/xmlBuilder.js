@@ -5,10 +5,10 @@ var xmlBuilder = new xml2js.Builder();
 var xmlParser = require("./../parser/xmlParser.js");
 var pluralize = require('pluralize')
 
-exports.registerElementBuilder = function(tag, builder){
+exports.registerElementBuilder = function(tag, builder) {
 
   // only allow to define one parser per element
-  if(!elementBuilders.has(tag)){
+  if (!elementBuilders.has(tag)) {
     elementBuilders.set(tag, builder);
 
 
@@ -19,83 +19,42 @@ exports.registerElementBuilder = function(tag, builder){
   }
 }
 
-exports.buildElement = function(element){
+exports.buildElement = function(element) {
   const tag = element.data.type;
-
   const builder = elementBuilders.get(tag);
-
-
-
   const xmlFormat = builder.build(element);
 
-  Object.keys(element.data.relationships).forEach((key) => {
-    let children = (element.data.relationships[key]).data;
+  if (element.data.relationships) {
+    if (element.data.relationships.lines) {
+      let children = element.data.relationships.lines.data.map(line => {
+        const child = xmlParser.getParsedElement(line.type.replace('-', '_'), line.id);
 
-    if(children.map !== undefined){
-      children.map(child => {
-        if(pluralize.isPlural(child.type)){
-          child.type = pluralize.singular(child.type);
-        }
-
-        const builder = elementBuilders.get(child.type);
-
-        if(builder !== undefined){
-          const object = xmlParser.getParsedElement(child.type.replace('-', '_'), child.id);
-
-          return builder.build(object);
-        }else{
-          return null;
+        if (child) {
+          return this.buildElement(child);
         }
       })
 
-      children.forEach(child => {
-        let c = xmlParser.getParsedElement(child.type.replace('-', '_'), child.id);
-        if(c !== undefined){
-          this.buildElement(c);
-        }
-
-      })
-
-
-      //xmlFormat.dialog.dialog_line = xmlChildren;
+      xmlFormat["dialog_line"] = children;
     }
-/*
-
-*/
-
-  })
-
-  /*
-  if(element.data.relationships.lines !== undefined){
-    let children = element.data.relationships.lines.data.map(line => {
-
-      // remove the pluralization needed by ember
-      if(pluralize.isPlural(line.type)){
-        line.type = pluralize.singular(line.type);
-      }
-
-      const lineBuilder = elementBuilders.get(line.type);
-
-      const object = xmlParser.getParsedElement(line.type.replace('-', '_'), line.id);
-      return lineBuilder.build(object);
-    })
-
-    xmlFormat.dialog.dialog_line = children;
   }
-  */
 
-  return xmlBuilder.buildObject(xmlFormat);
 
+  return xmlFormat;
 }
 
-exports.buildFile = function(file, rootElement){
+exports.buildFile = function(file, rootElement) {
   const result = this.buildElement(rootElement);
 
-  fs.writeFile(file, result, (err) => {
-    if(err){
-      console.log(err);
-    }
 
-    console.log(`file ${file} was successfully saved`);
-  })
+  var xml = xmlBuilder.buildObject(result);
+
+  return new Promise((resolve, reject) => {
+    fs.writeFile(file, xml, (err) => {
+      if (err) {
+        reject(err);
+      }
+
+      resolve();
+    });
+  });
 }

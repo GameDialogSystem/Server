@@ -40,20 +40,13 @@ const parserPath = './api/libraries/parser/';
 parser.registerElementParser('dialog', require(parserPath + 'dialogParser.js'), false);
 parser.registerElementParser('dialog_line', require(parserPath + 'dialogLineParser.js'), true);
 parser.registerElementParser('connection', require(parserPath + 'connectionParser.js'), false);
-parser.registerElementParser('condition', require(parserPath + 'conditionParser.js'), false);
 parser.registerElementParser('input', require(parserPath + 'inputParser.js'), false);
 parser.registerElementParser('output', require(parserPath + 'outputParser.js'), false);
 
 builder.registerElementBuilder('dialog', require(builderPath + 'dialogBuilder.js'));
 builder.registerElementBuilder('dialog-line', require(builderPath + 'dialogLineBuilder.js'));
 builder.registerElementBuilder('connection', require(builderPath + 'connectionBuilder.js'));
-builder.registerElementBuilder('text', require(builderPath + 'textBuilder.js'));
-builder.registerElementBuilder('condition', require(builderPath + 'conditionBuilder.js'));
 
-
-// registers element parsers and initializes the xml server
-xmlServer.initialize();
-//server.readAllDialogs();
 
 
 const server = app.listen(port, function() {

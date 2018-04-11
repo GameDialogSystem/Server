@@ -50,7 +50,6 @@ exports.updateConnection = (req, res) => {
 
 removeOutput = function(id) {
   const output = xmlParser.getParsedElement("output", id);
-  console.log(output.data.relationships['belongs-to']);
   const parentDialogLine = xmlParser.getParsedElement("dialog_line", output.data.relationships['belongs-to'].data.id);
 
   let parentOutputs = parentDialogLine.data.relationships.outputs.data;

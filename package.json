@@ -26,6 +26,10 @@
   },
   "homepage": "https://github.com/gilengel/ue-dialog-server#readme",
   "devDependencies": {
+    "chai-files": "^1.4.0",
+    "coffee-coverage": "^3.0.0",
+    "coveralls": "^3.0.0",
+    "istanbul": "^0.4.5",
     "nodemon": "^1.12.1",
     "nyc": "^11.6.0"
   },
@@ -33,12 +37,13 @@
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "chai": "^4.1.2",
+    "chai-fs": "^2.0.0",
     "chai-http": "^4.0.0",
     "express": "^4.16.2",
     "npm": "^5.7.1",
+    "nyc": "^11.6.0",
     "pluralize": "^7.0.0",
     "uuid": "^3.1.0",
-    "xml2js": "^0.4.19",
-    "nyc": "^11.6.0"
+    "xml2js": "^0.4.19"
   }
 }

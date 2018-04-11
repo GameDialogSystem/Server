@@ -1,12 +1,23 @@
-const assert = require('assert');
-const chai = require('chai');
-const expect = chai.expect;
-const should = chai.should();
-const chaiHttp = require('chai-http');
-const parser = require('./api/libraries/parser/xmlParser.js');
-const emberParser = require('./api/libraries/parser/emberDataParser.js');
+const assert = require('assert'),
+  chai = require('chai'),
+  path = require('path'),
+  fs = require("fs"),
+  expect = chai.expect,
+  should = chai.should(),
+  chaiHttp = require('chai-http'),
+  chaiFs = require('chai-fs'),
+  chaiFiles = require('chai-files'),
+  parser = require('./api/libraries/parser/xmlParser.js'),
+  xmlServer = require('./api/libraries/xmlServer.js'),
+  emberParser = require('./api/libraries/parser/emberDataParser.js');
 
 chai.use(chaiHttp);
+chai.use(chaiFs);
+chai.use(chaiFiles);
+
+const file = chaiFiles.file;
+
+const directory = path.resolve(__dirname + '/../../files/');
 
 /**
  * Basic server functionality
@@ -23,7 +34,7 @@ describe('Server', function() {
   describe('Basic Parser Functionality', function() {
     it('Add Invalid Parser', function() {
       const name = 'element';
-      chai.expect(() => parser.registerElementParser(name, function(){}, false)).to.throw(`The parser tried to register for the element "${name}" does not contain the methods parse and/or informAboutParsedChildren.`)
+      chai.expect(() => parser.registerElementParser(name, function() {}, false)).to.throw(`The parser tried to register for the element "${name}" does not contain the methods parse and/or informAboutParsedChildren.`)
     })
 
     it('Add Multiple Parser For Same Element', function() {
@@ -35,7 +46,13 @@ describe('Server', function() {
     })
 
     it('Get Not Known Parser For Element', function() {
-      chai.expect(() => parser.parseElement('unknown_element', {'$': { id: '1', input: 'i1', output: 'o1' }}).to.throw(`There is no element parser registered for elements with the tag name "${name}"`));
+      chai.expect(() => parser.parseElement('unknown_element', {
+        '$': {
+          id: '1',
+          input: 'i1',
+          output: 'o1'
+        }
+      }).to.throw(`There is no element parser registered for elements with the tag name "${name}"`));
     })
   })
 
@@ -52,14 +69,51 @@ describe('Server', function() {
   })
 
 
+  describe('Filesystem', function() {
+    it('FIS_001', function(done) {
+      this.timeout(15000);
 
+      chai.request(server)
+        .get('/io/null')
+        .end(function(err, res) {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.a('array');
+          
+          done();
+        });
+    })
+  })
   //
   // Dialog related test cases
   //
   describe('Dialog', function() {
+    const testFile = '.newly_saved_dialog.xml';
+
     describe('Create', function() {
       it('DIA_001', function() {
 
+      })
+
+
+      it('DIA_010', function(done) {
+        chai.request(server)
+          .get('/dialogs/testing.xml')
+          .end(function(err, res) {
+            expect(file(testFile)).to.not.exist;
+            xmlServer.saveFile(res.body, ".newly_saved_dialog.xml") .then(err => {
+              console.log(err);
+
+              expect(file(testFile)).to.exist;
+                done();
+            });
+          });
+      })
+
+      after(function(done) {
+        fs.unlink(testFile, (err) => {
+          done();
+          if (err) throw err;
+        });
       })
     })
 
@@ -85,7 +139,7 @@ describe('Server', function() {
             expect(res.body.data.relationships).to.have.property('lines');
             expect(res.body.data.relationships.lines).to.have.property('data');
             expect(res.body.data.relationships.lines.data).to.be.a('array');
-            expect(res.body.data.relationships.lines.data.length).to.be.equal(2);
+            expect(res.body.data.relationships.lines.data.length).to.be.equal(3);
 
             expect(res.body.data.relationships).to.have.property('starting-line');
 
@@ -181,19 +235,109 @@ describe('Server', function() {
   // DialogLine related test cases
   //
   describe('DialogLine', function() {
+    before(function(done) {
+      chai.request(server)
+        .get('/dialogs/testing.xml')
+        .end(function(err, res) {
+          done();
+        });
+    })
+
     describe('Create', function() {
-      before(function(done) {
+      it('DLI_001', function(done) {
         chai.request(server)
-          .get('/dialogs/testing.xml')
+          .post('/dialog-lines')
+          .set('content-type', 'application/vnd.api+json')
           .end(function(err, res) {
+            expect(res).to.have.status(400);
+
             done();
           });
       })
-      it('DLI_001', function(done) {
+
+      it('DLI_007', function(done) {
         chai.request(server)
-          .post('/dialogs/1')
+          .post('/dialog-lines')
+          .set('content-type', 'application/vnd.api+json')
+          .send({})
+          .end(function(err, res) {
+            expect(res).to.have.status(400);
+
+            done();
+          });
+      })
+
+      it('DLI_008', function(done) {
+
+        chai.request(server)
+          .post('/dialog-lines')
+          .set('content-type', 'application/vnd.api+json')
+          .send({
+            data: {
+              id: "newly_created_dialog_line",
+              attributes: {
+                message: "Random Text 91",
+                alreadySaid: false,
+                x: 420,
+                y: 200
+              },
+
+              relationships: {
+                dialog: {
+                  data: {
+                    type: "dialogs",
+                    id: "testing.xml"
+                  }
+                }
+              },
+
+              type: "dialog-lines"
+            }
+          })
           .end(function(err, res) {
             expect(res).to.have.status(200);
+
+            done();
+          });
+      })
+
+      it('DLI_009', function(done) {
+        chai.request(server)
+          .post('/dialog-lines')
+          .set('content-type', 'application/vnd.api+json')
+          .send({
+            data: {
+              id: "newly_created_dialog_line",
+              type: "dialog-lines"
+            }
+          })
+          .end(function(err, res) {
+            expect(res).to.have.status(400);
+
+            done();
+          });
+      })
+
+      it('DLI_012', function(done) {
+        chai.request(server)
+          .post('/dialog-lines')
+          .set('content-type', 'application/vnd.api+json')
+          .send({
+            data: {
+              id: "newly_created_dialog_line",
+              type: "dialog-lines",
+
+              relationships: {
+                dialog: {
+                  data: {
+                    type: "dialogs",
+                  }
+                }
+              },
+            }
+          })
+          .end(function(err, res) {
+            expect(res).to.have.status(400);
 
             done();
           });
@@ -201,16 +345,9 @@ describe('Server', function() {
     })
 
     describe('Get', function() {
-      before(function(done) {
-        chai.request(server)
-          .get('/dialogs/testing.xml')
-          .end(function(err, res) {
-            done();
-          });
-      })
       it('DLI_002', function(done) {
         chai.request(server)
-          .get('/dialog-lines/2')
+          .get('/dialog-lines/3')
           .end(function(err, res) {
             expect(res).to.have.status(200);
 
@@ -218,7 +355,7 @@ describe('Server', function() {
             expect(res.body).have.property('data');
 
             expect(res.body.data).have.property('id');
-            expect(res.body.data.id).to.equal('2');
+            expect(res.body.data.id).to.equal('3');
 
             expect(res.body.data).have.property('relationships');
             expect(res.body.data.relationships).to.be.a('object');
@@ -229,13 +366,6 @@ describe('Server', function() {
     })
 
     describe('Get All', function() {
-      before(function(done) {
-        chai.request(server)
-          .get('/dialogs/testing.xml')
-          .end(function(err, res) {
-            done();
-          });
-      })
       it('DLI_003', function(done) {
         chai.request(server)
           .get('/dialogs')
@@ -248,17 +378,32 @@ describe('Server', function() {
     })
 
     describe('Change', function() {
-      before(function(done) {
-        chai.request(server)
-          .get('/dialogs/testing.xml')
-          .end(function(err, res) {
-            done();
-          });
-      })
       it('DLI_004', function(done) {
         chai.request(server)
-          .patch('/dialogs/3')
-          .send({"data":{"id":"3","attributes":{"message":"Second line Blub","alreadySaid":false,"width":400,"height":166,"x":10,"y":200},"relationships":{"dialog":{"data":{"type":"dialogs","id":"testing.xml"}}},"type":"dialog-lines"}})
+          .patch('/dialog-lines/3')
+          .set('content-type', 'application/vnd.api+json')
+          .send({
+            "data": {
+              "id": "3",
+              "attributes": {
+                "message": "Second line Blub",
+                "alreadySaid": false,
+                "width": 400,
+                "height": 166,
+                "x": 10,
+                "y": 200
+              },
+              "relationships": {
+                "dialog": {
+                  "data": {
+                    "type": "dialogs",
+                    "id": "testing.xml"
+                  }
+                }
+              },
+              "type": "dialog-lines"
+            }
+          })
           .end(function(err, res) {
             expect(res).to.have.status(200);
 
@@ -267,12 +412,92 @@ describe('Server', function() {
             done();
           });
       })
+
+      it('DLI_010', function(done) {
+        chai.request(server)
+          .patch('/dialog-lines/3')
+          .set('content-type', 'application/vnd.api+json')
+          .send({
+            "data": {
+              "id": "3",
+              "attributes": {
+                "message": "Second line Blub",
+              },
+              "relationships": {
+                "dialog": {
+                  "data": {
+                    "type": "dialogs",
+                    "id": "invalid_dialog_relationships"
+                  }
+                }
+              },
+              "type": "dialog-lines"
+            }
+          })
+          .end(function(err, res) {
+            expect(res).to.have.status(400);
+
+            done();
+          });
+      })
+
+      it('DLI_011', function(done) {
+        chai.request(server)
+          .patch('/dialog-lines/3')
+          .set('content-type', 'application/vnd.api+json')
+          .send({
+            "data": {
+              "id": "3",
+              "attributes": {
+                "message": "Second line Blub",
+              },
+              "relationships": {
+                "dialog": {
+                  "data": {
+                    "type": "dialogs",
+                  }
+                }
+              },
+              "type": "dialog-lines"
+            }
+          })
+          .end(function(err, res) {
+            expect(res).to.have.status(400);
+
+            done();
+          });
+      })
     })
 
     describe('Delete', function() {
-      it('DLI_005', function() {
+      it('DLI_005', function(done) {
+        chai.request(server)
+          .delete('/dialog-lines/3')
+          .send({
+            'id': 3,
+            'type': 'dialog-line'
+          })
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
 
-      })
+            done();
+          });
+      });
+
+      it('DLI_006', function(done) {
+        chai.request(server)
+          .delete('/dialog-lines/not-existing-dialog-line')
+          .send({
+            'id': 3,
+            'type': 'dialog-line'
+          })
+          .end(function(err, res) {
+            expect(res).to.have.status(400);
+
+            done();
+          });
+      });
+
     })
   })
 
@@ -294,30 +519,32 @@ describe('Server', function() {
         chai.request(server)
           .post('/inputs')
           .set('content-type', 'application/vnd.api+json')
-          .send({ "data": {
-            "id": "test_input",
-            "attributes": {
-              "x":542,
-              "y":140
-            },
+          .send({
+            "data": {
+              "id": "test_input",
+              "attributes": {
+                "x": 542,
+                "y": 140
+              },
 
-            "relationships": {
-              "connection": {
-                "data": {
-                  "type": "connections",
-                  "id": "63b44f41-5089-428c-afd3-f01c69012d91"
+              "relationships": {
+                "connection": {
+                  "data": {
+                    "type": "connections",
+                    "id": "63b44f41-5089-428c-afd3-f01c69012d91"
+                  }
+                },
+
+                "belongs-to": {
+                  "data": {
+                    "type": "dialog-lines",
+                    "id": "2"
+                  }
                 }
               },
 
-              "belongs-to":{
-                "data": {
-                  "type":"dialog-lines",
-                  "id":"2"
-                }
-              }
-            },
-
-            "type":"inputs"}
+              "type": "inputs"
+            }
           })
           .end(function(err, res) {
             expect(res).to.have.status(200);
@@ -385,14 +612,16 @@ describe('Server', function() {
         chai.request(server)
           .patch('/inputs/i1')
           .set('content-type', 'application/vnd.api+json')
-          .send({ "data": {
-            "id": "i1",
-            "attributes": {
-              "x": 123,
-              "y": 321
-            },
+          .send({
+            "data": {
+              "id": "i1",
+              "attributes": {
+                "x": 123,
+                "y": 321
+              },
 
-            "type":"inputs"}
+              "type": "inputs"
+            }
           })
           .end(function(err, res) {
             expect(res).to.have.status(200);
@@ -461,30 +690,32 @@ describe('Server', function() {
         chai.request(server)
           .post('/outputs')
           .set('content-type', 'application/vnd.api+json')
-          .send({ "data": {
-            "id": "test_output",
-            "attributes": {
-              "x":542,
-              "y":140
-            },
+          .send({
+            "data": {
+              "id": "test_output",
+              "attributes": {
+                "x": 542,
+                "y": 140
+              },
 
-            "relationships": {
-              "connection": {
-                "data": {
-                  "type": "connections",
-                  "id": "63b44f41-5089-428c-afd3-f01c69012d91"
+              "relationships": {
+                "connection": {
+                  "data": {
+                    "type": "connections",
+                    "id": "63b44f41-5089-428c-afd3-f01c69012d91"
+                  }
+                },
+
+                "belongs-to": {
+                  "data": {
+                    "type": "dialog-lines",
+                    "id": "2"
+                  }
                 }
               },
 
-              "belongs-to":{
-                "data": {
-                  "type":"dialog-lines",
-                  "id":"2"
-                }
-              }
-            },
-
-            "type":"outputs"}
+              "type": "outputs"
+            }
           })
           .end(function(err, res) {
             expect(res).to.have.status(200);
@@ -510,6 +741,7 @@ describe('Server', function() {
       it('OPT_006', function(done) {
         chai.request(server)
           .post('/outputs')
+          .set('content-type', 'application/vnd.api+json')
           .end(function(err, res) {
             expect(res).to.have.status(500);
             done();
@@ -552,14 +784,16 @@ describe('Server', function() {
         chai.request(server)
           .patch('/outputs/o1')
           .set('content-type', 'application/vnd.api+json')
-          .send({ "data": {
-            "id": "o1",
-            "attributes": {
-              "x": 123,
-              "y": 321
-            },
+          .send({
+            "data": {
+              "id": "o1",
+              "attributes": {
+                "x": 123,
+                "y": 321
+              },
 
-            "type":"outputs"}
+              "type": "outputs"
+            }
           })
           .end(function(err, res) {
             expect(res).to.have.status(200);
@@ -642,15 +876,6 @@ describe('Server', function() {
       it('CNT_005', function() {
 
       })
-    })
-  })
-
-  //
-  // Filesystem related test cases
-  //
-  describe('Filesystem', function() {
-    describe('FIS_001', function() {
-
     })
   })
 });

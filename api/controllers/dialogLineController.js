@@ -26,7 +26,6 @@ const server = require('../libraries/xmlServer.js'),
         }
 
         if (relationships.outputs) {
-
           outputs = relationships.outputs.data.map(output => {
             return emberDataParser.createEmberObject("output", output.data.id).data;
           });
@@ -34,7 +33,7 @@ const server = require('../libraries/xmlServer.js'),
           copy.data.relationships.outputs = {
             "data": outputs
           };
-          
+
         }
       }
 
@@ -61,7 +60,6 @@ const server = require('../libraries/xmlServer.js'),
             server.getDialogLine(line.id).then(dialogLine => {
               // update the message (for now)
               dialogLine.data.attributes.message = dialogLineData.attributes.message;
-              //dialogLine.data.relationships = dialogLineData.relationships;
 
               // inform server about the made changes
               server.setDialogLine(line.id, dialogLine).then(dialogLine => {
@@ -69,26 +67,40 @@ const server = require('../libraries/xmlServer.js'),
               });
             });
           }
-
         });
+
+        res.json(req.body);
       }, (error) => {
-        res.json(error);
+        res.status(400).send();
+        return;
       })
 
     } else {
-      res.status(404).send(`you modified a dialog line that is unknown for the server.
+      res.status(400).send(`you modified a dialog line that is unknown for the server.
       This is most likely a software bug. Please report the problem in order to prevent the error to happening in future
       versions`);
     }
-
-
-    res.json(req.body);
   }
 
   exports.createDialogLine = function(req, res) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "*");
+
+    if(Object.keys(req.body).length === 0 && req.body.constructor === Object){
+      res.status(400);
+    }
+
     const data = req.body.data;
+    if(data === undefined){
+      res.status(400).send();
+      return;
+    }
+
+    if(data.relationships === undefined){
+      res.status(400).send();
+      return;
+    }
+
     const dialogId = data.relationships.dialog.data.id;
 
     data.relationships.dialog = data.relationships.dialog.data;
@@ -99,6 +111,9 @@ const server = require('../libraries/xmlServer.js'),
 
         xmlParser.addParsedElement("dialog_line", req.body);
       });
+    }else{
+      res.status(400).send();
+      return;
     }
 
     res.json(req.body);
@@ -111,6 +126,11 @@ const server = require('../libraries/xmlServer.js'),
     const id = req.params.dialogLineId;
     const object = xmlParser.removeParsedElement("dialog_line", id);
 
+    if(object === undefined){
+      res.status(400).send();
+      return;
+    }
+
     const dialog = xmlParser.getParsedElement('dialog', object.data.relationships.dialog.id);
 
     let relationships = dialog.data.relationships.lines.data;
@@ -120,9 +140,6 @@ const server = require('../libraries/xmlServer.js'),
 
     relationships = relationships.splice(index, index+1);
 
-    if(object === undefined){
-      res.status(400);
-    }else{
-      res.json({ data : {id: req.params.dialogLineId,  type: 'dialog-line'} });
-    }
+
+    res.json({ data : {id: req.params.dialogLineId,  type: 'dialog-line'} });
   };
