@@ -72,6 +72,7 @@ describe('Server', function() {
       chai.request(server)
         .get('/io/null')
         .end(function(err, res) {
+          expect(err).to.be.null;
           expect(res).to.have.status(200);
           expect(res.body).to.be.a('array');
 
@@ -96,7 +97,7 @@ describe('Server', function() {
           .get('/dialogs/testing.xml')
           .end(function(err, res) {
             expect(file(testFile)).to.not.exist;
-            xmlServer.saveFile(res.body, ".newly_saved_dialog.xml") .then(err => {
+            xmlServer.saveFile(res.body, ".newly_saved_dialog.xml") .then(() => {
 
               expect(file(testFile)).to.exist;
               done();

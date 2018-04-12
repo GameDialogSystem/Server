@@ -1,5 +1,4 @@
 var xml2js = require('xml2js');
-var xmlBuilder = new xml2js.Builder();
 
 exports.build = function(element){
   return {

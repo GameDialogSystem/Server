@@ -4,14 +4,12 @@ var express = require('express'),
     port = process.env.PORT || 3000,
     builder = require('./api/libraries/builder/xmlBuilder.js'),
     parser = require('./api/libraries/parser/xmlParser.js'),
-    xmlServer = require('./api/libraries/xmlServer.js');
-
-var dialogRoutes = require('./api/routes/dialogRoutes');
-var dialogLineRoutes = require('./api/routes/dialogLineRoutes');
-var inputRoutes = require('./api/routes/inputRoutes');
-var outputRoutes = require('./api/routes/outputRoutes');
-var connectionRoutes = require('./api/routes/connectionRoutes');
-var filesystemRoutes = require('./api/routes/filesystemRoutes')
+    dialogRoutes = require('./api/routes/dialogRoutes'),
+    dialogLineRoutes = require('./api/routes/dialogLineRoutes'),
+    inputRoutes = require('./api/routes/inputRoutes'),
+    outputRoutes = require('./api/routes/outputRoutes'),
+    connectionRoutes = require('./api/routes/connectionRoutes'),
+    filesystemRoutes = require('./api/routes/filesystemRoutes');
 
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 app.use((req, res, next) => {

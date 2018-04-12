@@ -1,9 +1,8 @@
-var elementBuilders = new Map();
-var xml2js = require('xml2js');
-var fs = require('fs');
-var xmlBuilder = new xml2js.Builder();
-var xmlParser = require("./../parser/xmlParser.js");
-var pluralize = require('pluralize')
+var elementBuilders = new Map(),
+    xml2js = require('xml2js'),
+    fs = require('fs'),
+    xmlBuilder = new xml2js.Builder(),
+    xmlParser = require("./../parser/xmlParser.js");
 
 exports.registerElementBuilder = function(tag, builder) {
 
