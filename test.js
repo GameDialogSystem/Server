@@ -40,14 +40,25 @@ const createConnectorTestData = function(type) {
     }
   }
 
+
+
+
+
 /**
  * Basic server functionality
  */
 describe('Server', function() {
   var server;
+
+  const serverRequest = function(route, content) {
+    return chai.request(server)[route](content)
+    .set('content-type', 'application/vnd.api+json');
+  }
+
   beforeEach(function() {
     server = require('./server');
   });
+
   afterEach(function() {
     server.close();
   });
@@ -401,9 +412,7 @@ describe('Server', function() {
     describe('Change', function() {
 
       it('DLI_004', function(done) {
-        chai.request(server)
-          .patch('/dialog-lines/3')
-          .set('content-type', 'application/vnd.api+json')
+        serverRequest('patch', '/dialog-lines/3')
           .send({
             "data": {
               "id": "3",
@@ -434,9 +443,7 @@ describe('Server', function() {
       })
 
       it('DLI_010', function(done) {
-        chai.request(server)
-          .patch('/dialog-lines/3')
-          .set('content-type', 'application/vnd.api+json')
+        serverRequest('patch', '/dialog-lines/3')
           .send({
             "data": {
               "id": "3",
@@ -462,9 +469,7 @@ describe('Server', function() {
       })
 
       it('DLI_011', function(done) {
-        chai.request(server)
-          .patch('/dialog-lines/3')
-          .set('content-type', 'application/vnd.api+json')
+        serverRequest('patch', '/dialog-lines/3')
           .send({
             "data": {
               "id": "3",
@@ -697,7 +702,7 @@ describe('Server', function() {
             expect(res.body).have.property('data');
 
             expect(res.body.data).have.property('id');
-            expect(res.body.data.id).to.equal('test_output');
+            expect(res.body.data.id).to.equal('test_input');
 
             expect(res.body.data).have.property('type');
             expect(res.body.data.type).to.equal('output');
