@@ -40,6 +40,25 @@ const createConnectorTestData = function(type) {
     }
   }
 
+const createConnectorChanceTestData = function() {
+  return {
+    "data": {
+      "id": "3",
+      "attributes": {
+        "message": "Second line Blub",
+      },
+      "relationships": {
+        "dialog": {
+          "data": {
+            "type": "dialogs",
+          }
+        }
+      },
+      "type": "dialog-lines"
+    }
+  }
+}
+
 
 
 
@@ -443,24 +462,11 @@ describe('Server', function() {
       })
 
       it('DLI_010', function(done) {
+        var result = createConnectorChanceTestData();
+        result.data.relationships.dialog.data.id = "invalid_dialog_relationships"
+
         serverRequest('patch', '/dialog-lines/3')
-          .send({
-            "data": {
-              "id": "3",
-              "attributes": {
-                "message": "Second line Blub",
-              },
-              "relationships": {
-                "dialog": {
-                  "data": {
-                    "type": "dialogs",
-                    "id": "invalid_dialog_relationships"
-                  }
-                }
-              },
-              "type": "dialog-lines"
-            }
-          })
+          .send(result)
           .end(function(err, res) {
             expect(res).to.have.status(400);
 
@@ -470,22 +476,7 @@ describe('Server', function() {
 
       it('DLI_011', function(done) {
         serverRequest('patch', '/dialog-lines/3')
-          .send({
-            "data": {
-              "id": "3",
-              "attributes": {
-                "message": "Second line Blub",
-              },
-              "relationships": {
-                "dialog": {
-                  "data": {
-                    "type": "dialogs",
-                  }
-                }
-              },
-              "type": "dialog-lines"
-            }
-          })
+          .send(createConnectorChanceTestData())
           .end(function(err, res) {
             expect(res).to.have.status(400);
 
