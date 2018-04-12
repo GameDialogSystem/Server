@@ -1,19 +1,44 @@
-const assert = require('assert'),
-  chai = require('chai'),
-  fs = require("fs"),
-  expect = chai.expect,
-  chaiHttp = require('chai-http'),
-  chaiFs = require('chai-fs'),
-  chaiFiles = require('chai-files'),
-  parser = require('./api/libraries/parser/xmlParser.js'),
-  xmlServer = require('./api/libraries/xmlServer.js'),
-  emberParser = require('./api/libraries/parser/emberDataParser.js');
+const chai = require('chai'),
+      fs = require("fs"),
+      expect = chai.expect,
+      chaiHttp = require('chai-http'),
+      chaiFs = require('chai-fs'),
+      chaiFiles = require('chai-files'),
+      parser = require('./api/libraries/parser/xmlParser.js'),
+      xmlServer = require('./api/libraries/xmlServer.js'),
+      emberParser = require('./api/libraries/parser/emberDataParser.js');
 
 chai.use(chaiHttp);
 chai.use(chaiFs);
 chai.use(chaiFiles);
 
 const file = chaiFiles.file;
+
+const createConnectorTestData = function(type) {
+    return {
+      "data": {
+        "id": "test_input",
+
+        "relationships": {
+          "connection": {
+            "data": {
+              "type": "connections",
+              "id": "63b44f41-5089-428c-afd3-f01c69012d91"
+            }
+          },
+
+          "belongs-to": {
+            "data": {
+              "type": "dialog-lines",
+              "id": "2"
+            }
+          }
+        },
+
+        "type": type
+      }
+    }
+  }
 
 /**
  * Basic server functionality
@@ -496,6 +521,7 @@ describe('Server', function() {
     })
   })
 
+
   function checkUpdateOfConnector(res, connectorType) {
     expect(res).to.have.status(200);
 
@@ -537,30 +563,7 @@ describe('Server', function() {
         chai.request(server)
           .post('/inputs')
           .set('content-type', 'application/vnd.api+json')
-          .send({
-            "data": {
-              "id": "test_input",
-
-
-              "relationships": {
-                "connection": {
-                  "data": {
-                    "type": "connections",
-                    "id": "63b44f41-5089-428c-afd3-f01c69012d91"
-                  }
-                },
-
-                "belongs-to": {
-                  "data": {
-                    "type": "dialog-lines",
-                    "id": "2"
-                  }
-                }
-              },
-
-              "type": "inputs"
-            }
-          })
+          .send(createConnectorTestData('inputs'))
           .end(function(err, res) {
             expect(res).to.have.status(200);
 
@@ -686,29 +689,7 @@ describe('Server', function() {
         chai.request(server)
           .post('/outputs')
           .set('content-type', 'application/vnd.api+json')
-          .send({
-            "data": {
-              "id": "test_output",
-
-              "relationships": {
-                "connection": {
-                  "data": {
-                    "type": "connections",
-                    "id": "63b44f41-5089-428c-afd3-f01c69012d91"
-                  }
-                },
-
-                "belongs-to": {
-                  "data": {
-                    "type": "dialog-lines",
-                    "id": "2"
-                  }
-                }
-              },
-
-              "type": "outputs"
-            }
-          })
+          .send(createConnectorTestData('outputs'))
           .end(function(err, res) {
             expect(res).to.have.status(200);
 
