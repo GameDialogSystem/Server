@@ -1,9 +1,7 @@
 const assert = require('assert'),
   chai = require('chai'),
-  path = require('path'),
   fs = require("fs"),
   expect = chai.expect,
-  should = chai.should(),
   chaiHttp = require('chai-http'),
   chaiFs = require('chai-fs'),
   chaiFiles = require('chai-files'),
@@ -201,7 +199,7 @@ describe('Server', function() {
       before(function(done) {
         chai.request(server)
           .get('/dialogs/testing.xml')
-          .end(function(err) {
+          .end(function() {
             done();
           });
       })
@@ -235,7 +233,7 @@ describe('Server', function() {
     before(function(done) {
       chai.request(server)
         .get('/dialogs/testing.xml')
-        .end(function(err) {
+        .end(function() {
           done();
         });
     })
@@ -375,6 +373,7 @@ describe('Server', function() {
     })
 
     describe('Change', function() {
+
       it('DLI_004', function(done) {
         chai.request(server)
           .patch('/dialog-lines/3')
@@ -527,7 +526,7 @@ describe('Server', function() {
     before(function(done) {
       chai.request(server)
         .get('/dialogs/testing.xml')
-        .end(function(err) {
+        .end(function() {
           done();
         });
     })
@@ -540,10 +539,7 @@ describe('Server', function() {
           .send({
             "data": {
               "id": "test_input",
-              "attributes": {
-                "x": 542,
-                "y": 140
-              },
+
 
               "relationships": {
                 "connection": {
@@ -679,7 +675,7 @@ describe('Server', function() {
     before(function(done) {
       chai.request(server)
         .get('/dialogs/testing.xml')
-        .end(function(err) {
+        .end(function() {
           done();
         });
     })
@@ -692,10 +688,6 @@ describe('Server', function() {
           .send({
             "data": {
               "id": "test_output",
-              "attributes": {
-                "x": 542,
-                "y": 140
-              },
 
               "relationships": {
                 "connection": {
