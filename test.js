@@ -17,8 +17,6 @@ chai.use(chaiFiles);
 
 const file = chaiFiles.file;
 
-const directory = path.resolve(__dirname + '/../../files/');
-
 /**
  * Basic server functionality
  */
@@ -78,7 +76,7 @@ describe('Server', function() {
         .end(function(err, res) {
           expect(res).to.have.status(200);
           expect(res.body).to.be.a('array');
-          
+
           done();
         });
     })
@@ -101,10 +99,9 @@ describe('Server', function() {
           .end(function(err, res) {
             expect(file(testFile)).to.not.exist;
             xmlServer.saveFile(res.body, ".newly_saved_dialog.xml") .then(err => {
-              console.log(err);
 
               expect(file(testFile)).to.exist;
-                done();
+              done();
             });
           });
       })
@@ -204,7 +201,7 @@ describe('Server', function() {
       before(function(done) {
         chai.request(server)
           .get('/dialogs/testing.xml')
-          .end(function(err, res) {
+          .end(function(err) {
             done();
           });
       })
@@ -238,7 +235,7 @@ describe('Server', function() {
     before(function(done) {
       chai.request(server)
         .get('/dialogs/testing.xml')
-        .end(function(err, res) {
+        .end(function(err) {
           done();
         });
     })
@@ -407,8 +404,6 @@ describe('Server', function() {
           .end(function(err, res) {
             expect(res).to.have.status(200);
 
-            console.log(res.body);
-
             done();
           });
       })
@@ -501,6 +496,29 @@ describe('Server', function() {
     })
   })
 
+  function checkUpdateOfConnector(res, connectorType) {
+    expect(res).to.have.status(200);
+
+    expect(res.body).to.be.a('object');
+    expect(res.body).have.property('data');
+
+    expect(res.body.data).have.property('id');
+    expect(res.body.data.id).to.equal('o1');
+
+    expect(res.body.data).have.property('type');
+    expect(res.body.data.type).to.equal(connectorType);
+
+    expect(res.body.data).have.property('attributes');
+    expect(res.body.data.attributes).to.be.a('object');
+
+    expect(res.body.data.attributes).have.property('x');
+    expect(res.body.data.attributes.x).to.be.a('number');
+    expect(res.body.data.attributes.x).to.be.equal(123);
+    expect(res.body.data.attributes).have.property('y');
+    expect(res.body.data.attributes.y).to.be.a('number');
+    expect(res.body.data.attributes.y).to.be.equal(321);
+  }
+
 
   //
   // Input related test cases
@@ -509,7 +527,7 @@ describe('Server', function() {
     before(function(done) {
       chai.request(server)
         .get('/dialogs/testing.xml')
-        .end(function(err, res) {
+        .end(function(err) {
           done();
         });
     })
@@ -614,7 +632,7 @@ describe('Server', function() {
           .set('content-type', 'application/vnd.api+json')
           .send({
             "data": {
-              "id": "i1",
+              "id": "o1",
               "attributes": {
                 "x": 123,
                 "y": 321
@@ -624,26 +642,7 @@ describe('Server', function() {
             }
           })
           .end(function(err, res) {
-            expect(res).to.have.status(200);
-
-            expect(res.body).to.be.a('object');
-            expect(res.body).have.property('data');
-
-            expect(res.body.data).have.property('id');
-            expect(res.body.data.id).to.equal('i1');
-
-            expect(res.body.data).have.property('type');
-            expect(res.body.data.type).to.equal('inputs');
-
-            expect(res.body.data).have.property('attributes');
-            expect(res.body.data.attributes).to.be.a('object');
-
-            expect(res.body.data.attributes).have.property('x');
-            expect(res.body.data.attributes.x).to.be.a('number');
-            expect(res.body.data.attributes.x).to.be.equal(123);
-            expect(res.body.data.attributes).have.property('y');
-            expect(res.body.data.attributes.y).to.be.a('number');
-            expect(res.body.data.attributes.y).to.be.equal(321);
+            checkUpdateOfConnector(res, 'inputs')
             done();
           });
 
@@ -680,7 +679,7 @@ describe('Server', function() {
     before(function(done) {
       chai.request(server)
         .get('/dialogs/testing.xml')
-        .end(function(err, res) {
+        .end(function(err) {
           done();
         });
     })
@@ -796,26 +795,7 @@ describe('Server', function() {
             }
           })
           .end(function(err, res) {
-            expect(res).to.have.status(200);
-
-            expect(res.body).to.be.a('object');
-            expect(res.body).have.property('data');
-
-            expect(res.body.data).have.property('id');
-            expect(res.body.data.id).to.equal('o1');
-
-            expect(res.body.data).have.property('type');
-            expect(res.body.data.type).to.equal('outputs');
-
-            expect(res.body.data).have.property('attributes');
-            expect(res.body.data.attributes).to.be.a('object');
-
-            expect(res.body.data.attributes).have.property('x');
-            expect(res.body.data.attributes.x).to.be.a('number');
-            expect(res.body.data.attributes.x).to.be.equal(123);
-            expect(res.body.data.attributes).have.property('y');
-            expect(res.body.data.attributes.y).to.be.a('number');
-            expect(res.body.data.attributes.y).to.be.equal(321);
+            checkUpdateOfConnector(res, 'outputs')
             done();
           });
 
