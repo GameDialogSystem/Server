@@ -41,6 +41,7 @@ exports.getOutput = function(req, res) {
   res.header("Access-Control-Allow-Headers", "*");
 
   let output = xmlParser.getParsedElement("output", req.params.outputId);
+/*
   const data = output.data;
 
   const relationships = data.relationships;
@@ -51,7 +52,7 @@ exports.getOutput = function(req, res) {
       'data': data.relationships['belongs-to']
     };
   }
-
+*/
   res.json(output);
 };
 

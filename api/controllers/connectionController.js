@@ -31,6 +31,7 @@ exports.createConnection = (req, res) => {
   const outputId = req.body.data.relationships.output.data.id;
 
   let output = xmlParser.getParsedElement("output", outputId);
+
   if (output.included === undefined) {
     output.included = []
     output.included.push(req.body.data);
@@ -52,12 +53,14 @@ removeOutput = function(id) {
   const output = xmlParser.getParsedElement("output", id);
   const parentDialogLine = xmlParser.getParsedElement("dialog_line", output.data.relationships['belongs-to'].data.id);
 
-  let parentOutputs = parentDialogLine.data.relationships.outputs.data;
-  const index = parentOutputs.findIndex(_output => {
-    return _output.data.id === output.data.id;
-  });
+  if(parentDialogLine.data.relationships !== undefined){
+    let parentOutputs = parentDialogLine.data.relationships.outputs.data;
+    const index = parentOutputs.findIndex(_output => {
+      return _output.data.id === output.data.id;
+    });
 
-  parentOutputs = parentOutputs.splice(index, index + 1);
+    parentOutputs = parentOutputs.splice(index, index + 1);
+  }
 
   xmlParser.removeParsedElement('output', output.data.id);
 }
@@ -68,6 +71,9 @@ exports.deleteConnection = function(req, res) {
 
   const id = req.params.connectionId;
   const connection = xmlParser.removeParsedElement("connection", id);
+
+  res.status(200);
+
   const relationships = connection.data.relationships;
   const input = xmlParser.getParsedElement("input", relationships.input.data.id);
   xmlParser.removeParsedElement('input', input.data.id);

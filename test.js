@@ -74,12 +74,16 @@ describe('Server', function() {
     .set('content-type', 'application/vnd.api+json');
   }
 
-  beforeEach(function() {
+  beforeEach(function(done) {
     server = require('./server');
+
+    done();
   });
 
-  afterEach(function() {
+  afterEach(function(done) {
     server.close();
+
+    done();
   });
 
   describe('Basic Parser Functionality', function() {
@@ -193,6 +197,19 @@ describe('Server', function() {
             expect(res.body.data.relationships.lines.data.length).to.be.equal(3);
 
             expect(res.body.data.relationships).to.have.property('starting-line');
+
+            // check outputs
+            let outputs = parser.getAllParsedElementsOfATag('output');
+            //expect(outputs).to.be.a('object');
+            outputs.forEach(function(output) {
+              expect(output).to.be.a('object');
+              expect(output).to.have.property('data');
+              expect(output.data).to.have.property('id');
+              expect(output.data).to.have.property('type');
+              expect(output.data).to.have.property('relationships')
+
+              console.log(output.data.relationships.connection);
+            });
 
             done();
           });
@@ -799,8 +816,28 @@ describe('Server', function() {
   //
   describe('Connection', function() {
     describe('Create', function() {
-      it('CNT_001', function() {
+      it('CNT_001', function(done) {
+        serverRequest('post', '/connections')
+          .send({
+            data:
+          {
+            id: 1,
 
+            relationships : {
+              output: {
+                data: {
+                  id: 'o1',
+                  type: 'output'
+                }
+              }
+            }
+          }})
+          .end(function(err, res){
+            expect(err).to.be.null;
+            expect(res).to.have.status(200);
+
+            done();
+          })
       })
     })
 
@@ -823,8 +860,20 @@ describe('Server', function() {
     })
 
     describe('Delete', function() {
-      it('CNT_005', function() {
+      it('CNT_005', function(done) {
+        serverRequest('delete', '/connections/1')
+          .send({
+            data:
+          {
+            id: 1,
+            type: 'connection'
+          }})
+          .end(function(err, res){
+            expect(err).to.be.null;
+            expect(res).to.have.status(200);
 
+            done();
+          })
       })
     })
   })

@@ -9,18 +9,26 @@ dirTree = function(folder) {
     return fs.readdir(folder, (err, content) => {
 
       files = content.map((fileName) => {
-        const stat = fs.statSync(folder + "/" + fileName);
-        const extension = path.extname(fileName);
+        try{
+          const stat = fs.statSync(folder + fileName);
 
-        return {
-          lastAccessTimestamp: stat.atimeMs,
-          lastModifiedTimestamp: stat.mtimeMs,
-          lastChangedTimestamp: stat.ctimeMs,
-          fileName: fileName.replace(extension, ''),
-          extension: extension.replace('.', ''),
-          isFile: stat.isFile(),
-          isDirectory: stat.isDirectory()
+          const extension = path.extname(fileName);
 
+          return {
+            lastAccessTimestamp: stat.atimeMs,
+            lastModifiedTimestamp: stat.mtimeMs,
+            lastChangedTimestamp: stat.ctimeMs,
+            fileName: fileName.replace(extension, ''),
+            extension: extension.replace('.', ''),
+            isFile: stat.isFile(),
+            isDirectory: stat.isDirectory()
+
+          }
+
+        // TODO .steampath error make sure to change this behavior to
+        // handle the raise of the exception approbatly
+        }catch(exception){
+          
         }
       })
 
@@ -43,8 +51,12 @@ exports.getFiles = function(req, res) {
     path = "";
   }
 
-
-  dirTree(os.homedir() + '/' + path).then(files => {
-    res.json(files);
-  })
+  path = os.homedir() + '/' + path;
+  if(!fs.existsSync(path)){
+    res.send(404);
+  }else{
+    dirTree(path).then(files => {
+      res.json(files);
+    })
+  }
 };
