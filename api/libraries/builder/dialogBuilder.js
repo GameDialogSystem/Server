@@ -1,5 +1,3 @@
-var xml2js = require('xml2js');
-
 exports.build = function(element){
   return {
     "dialog" : {

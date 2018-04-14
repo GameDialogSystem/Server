@@ -16,7 +16,7 @@ exports.registerEventEmitter = function(emitter){
 exports.parse = function(element){
   return new Promise((resolve, reject) => {
     if(element.$ === undefined){
-      reject("XML file has no defined id");
+      reject({ errorCode: '006', errorMessage: "You tried to parse a dialog that contains a dialog line that does not have an id. This is not allowed" });
     }
 
     const id = element.$.id;

@@ -5,12 +5,7 @@ const Promise = require("bluebird"),
       parser = require('./parser/xmlParser.js');
 
 
-const directory = resolve(__dirname + '/../../files/');
-
-
-exports.getParser = function(){
-  return parser;
-}
+exports.directory = resolve(__dirname + '/../../files/');
 
 exports.saveFile = function(object, filename) {
   let dialog = parser.getParsedElement("dialog", object.data.id);
@@ -28,11 +23,11 @@ exports.getDialog = function(id){
     if(dialog !== undefined){
       resolve(dialog);
     }else{
-      parser.parseFile(path.join(directory, id)).then(dialog => {
+      parser.parseFile(path.join(this.directory, id)).then(dialog => {
         resolve(dialog);
       }, reason => {
         reject(reason);
-      });
+      })
     }
   })
 }

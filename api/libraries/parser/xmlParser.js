@@ -22,10 +22,6 @@ var _elementParsers = new Map();
  */
 var parsedElements = new Map();
 
-exports.getEventEmitter = () => {
-  return eventEmitter;
-}
-
 exports.getParsedElement = function(tag, id) {
   return this.getAllParsedElementsOfATag(tag).get(id);
 }
@@ -86,12 +82,14 @@ exports.parseFile = function(file) {
 
   return new Promise((resolve, reject) => {
     if (!fs.existsSync(file)) {
-      reject("File does not exist");
+      reject({ errorCode: '003', errorMessage: `You tried to load the file ${file} that does not exist or is not readable.`});
       return;
     }
 
     fs.readFile(file, (error, data) => {
-      if (error) throw error;
+      if (error){
+        reject(error);
+      }
 
       parser.parseString(data, (error, result) => {
         if (error) throw error;
@@ -100,8 +98,8 @@ exports.parseFile = function(file) {
 
         self.parseElement(tag, result[tag]).then(element => {
           resolve(element);
-        }, reject => {
-          console.log(reject);
+        }, reason => {
+          reject(reason);
         });
       });
     });
@@ -130,7 +128,6 @@ exports.parseElement = function(tag, element) {
 
     keys.splice(keys.indexOf('$'), 1);
 
-
     let elementParser = null;
     try {
       elementParser = getElementParser(tag);
@@ -139,28 +136,28 @@ exports.parseElement = function(tag, element) {
     }
 
     let object = elementParser.parse(element, this);
-    var children = [];
+    object.then(function(value){
+      var children = [];
 
-    keys.forEach((key) => {
-      if (Array.isArray(element[key])) {
-        element[key].forEach((child) => {
-          children.push(self.parseElement(key, child, resolve, reject));
-        })
-      }
-    });
+      keys.forEach((key) => {
+        if (Array.isArray(element[key])) {
+          element[key].forEach((child) => {
+            children.push(self.parseElement(key, child, resolve, reject));
+          })
+        }
+      });
 
-    Promise.all(children).then(children => {
-      elementParser.informAboutParsedChildren(object, children);
-    }, (reject) => {
-      console.log(reject);
-    })
+      Promise.all(children).then(children => {
+        elementParser.informAboutParsedChildren(value, children);
 
-    object.then(result => {
-      this.getAllParsedElementsOfATag(tag).set(result.data.id, result);
+        self.getAllParsedElementsOfATag(tag).set(value.data.id, value);
 
-      resolve(result);
-    }, (reject) => {
-      console.log(reject);
+        resolve(value);
+      }, (reason) => {
+        reject(reason);
+      })
+    }, function(reason){
+      reject(reason);
     });
   });
 }

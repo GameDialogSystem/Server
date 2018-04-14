@@ -9,24 +9,25 @@ const emberParser = require("./emberDataParser.js"),
  * @return {object}         model representation of a dialog line as a JSON API object
  */
 exports.parse = function(element) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let id = element.$.id;
     let name = element.$.name;
-
 
     let attributes = new Map();
     if (name !== undefined) {
       attributes.set('name', name);
+    }else{
+      reject({errorCode: '004', errorMessage: 'You tried to parse an dialog file that does not specify a name.'});
     }
 
     let relationships = new Map();
 
     if (element.dialog_line !== undefined) {
       const dialogLines = element.dialog_line.map(line => {
-        if(line.$ === undefined){
+        if (line.$ === undefined) {
           return null;
         }
-        
+
         return emberParser.createEmberObject("dialog-line", line.$.id).data;
       })
 
@@ -48,13 +49,10 @@ exports.parse = function(element) {
 }
 
 exports.informAboutParsedChildren = function(object, children) {
-  object.then(dialog => {
     children.forEach(child => {
-      if (child.data !== undefined && child.data.type !== undefined) {
-        if (child.data.type === 'dialog-line') {
-          child.data.relationships['dialog'] = emberParser.convertEmberObjectToEmberRelationship(dialog);
-        }
+      if (child.data.type === 'dialog-line') {
+        child.data.relationships['dialog'] = emberParser.convertEmberObjectToEmberRelationship(object);
       }
     });
-  })
+
 }

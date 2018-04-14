@@ -13,33 +13,29 @@ exports.listAllDialogs = function(req, res) {
   res.json({ "data" : elements });
 }
 
-
-exports.createDialog = function() {
-  console.log("BLUB");
-};
-
+/*
 exports.saveDialog = function(req, res) {
   res.json(res.body);
 };
-
+*/
 exports.getDialog = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
   server.getDialog(req.params.dialogId).then(dialog => {
     res.json(dialog);
-  }, () => {
-    res.status(404).send(`file ${req.params.dialogId} does not exist or is not a valid file`);
-  })
+  }, (error) => {
+    res.status(500).json(error)
+  });
 };
-
+/*
 exports.updateDialog = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
   res.json(req.body);
 };
-
+*/
 exports.deleteDialog = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");

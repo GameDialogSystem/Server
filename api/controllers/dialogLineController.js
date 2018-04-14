@@ -14,8 +14,10 @@ const server = require('../libraries/xmlServer.js'),
       let inputs = [];
       let outputs = [];
 
-      if (relationships) {
+      if (relationships !== undefined) {
         if (relationships.inputs) {
+
+          console.log(relationships)
           inputs = relationships.inputs.data.map(input => {
             return emberDataParser.createEmberObject("input", input.data.id).data;
           });
@@ -47,13 +49,11 @@ const server = require('../libraries/xmlServer.js'),
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "*");
 
-
     const dialogId = req.body.data.relationships.dialog.data.id;
 
     const dialogLineData = req.body.data;
     if (dialogId !== undefined) {
       server.getDialog(dialogId).then((result) => {
-
         // iterate over all dialog lines to find the correct one
         result.data.relationships.lines.data.forEach((line) => {
           if (line.id === dialogLineData.id) {
@@ -71,7 +71,7 @@ const server = require('../libraries/xmlServer.js'),
 
         res.json(req.body);
       }, (error) => {
-        res.status(400).send();
+        res.status(400).json(error);
         return;
       })
 
@@ -131,9 +131,14 @@ const server = require('../libraries/xmlServer.js'),
       return;
     }
 
+
+
     const dialog = xmlParser.getParsedElement('dialog', object.data.relationships.dialog.id);
 
     let relationships = dialog.data.relationships.lines.data;
+    if(relationships === undefined){
+
+    }
     const index = relationships.findIndex(dialogLine => {
       return dialogLine.id === id;
     });

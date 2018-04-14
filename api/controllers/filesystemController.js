@@ -28,7 +28,7 @@ dirTree = function(folder) {
         // TODO .steampath error make sure to change this behavior to
         // handle the raise of the exception approbatly
         }catch(exception){
-          
+
         }
       })
 
@@ -53,7 +53,7 @@ exports.getFiles = function(req, res) {
 
   path = os.homedir() + '/' + path;
   if(!fs.existsSync(path)){
-    res.send(404);
+    res.sendStatus(404);
   }else{
     dirTree(path).then(files => {
       res.json(files);

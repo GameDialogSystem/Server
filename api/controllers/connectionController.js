@@ -15,7 +15,8 @@ exports.getConnection = (req, res) => {
   }
 
   const relationships = data.relationships;
-  if (relationships) {
+
+  if (relationships !== undefined) {
     object.connection["input"] = relationships.input.data.id;
     object.connection["output"] = relationships.output.data.id;
   }
@@ -28,6 +29,7 @@ exports.createConnection = (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
+  /*
   const outputId = req.body.data.relationships.output.data.id;
 
   let output = xmlParser.getParsedElement("output", outputId);
@@ -36,15 +38,9 @@ exports.createConnection = (req, res) => {
     output.included = []
     output.included.push(req.body.data);
   }
+  */
 
   xmlParser.addParsedElement("connection", req.body);
-
-  res.json(req.body);
-}
-
-exports.updateConnection = (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "*");
 
   res.json(req.body);
 }
@@ -72,7 +68,10 @@ exports.deleteConnection = function(req, res) {
   const id = req.params.connectionId;
   const connection = xmlParser.removeParsedElement("connection", id);
 
-  res.status(200);
+  if (connection === undefined){
+    res.sendStatus(400);
+    return;
+  }
 
   const relationships = connection.data.relationships;
   const input = xmlParser.getParsedElement("input", relationships.input.data.id);
@@ -87,7 +86,5 @@ exports.deleteConnection = function(req, res) {
         type: 'connection'
       }
     });
-  } else {
-    res.status(400);
   }
 };

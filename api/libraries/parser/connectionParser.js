@@ -43,14 +43,18 @@ exports.parse = function(element){
     // create the final resulting object
     let emberObject = emberParser.createEmberObject("connection", id, attributes, connectionRelationships);
 
+    /*
     if(inputObject.data.relationships === undefined){
       inputObject.data.relationships = {}
     }
+    */
     inputObject.data.relationships.connection = emberObject;
 
+    /*
     if(outputObject.data.relationships === undefined){
       inputObject.data.relationships = {}
     }
+    */
 
     if(outputObject.included === undefined){
       outputObject.included = []

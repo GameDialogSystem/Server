@@ -6,30 +6,33 @@ exports.createInput = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
+
   if (req.body.data === undefined) {
     res.sendStatus(500);
     return;
   }
 
+
   if (pluralize.isPlural(req.body.data.type)) {
     req.body.data.type = pluralize.singular(req.body.data.type);
   }
 
-  let dialogLine = xmlParser.getParsedElement("dialog_line", req.body.data.relationships['belongs-to'].data.id);
-  if (dialogLine.data.relationships === undefined) {
-    dialogLine.data.relationships = {}
+  if(!req.body.data.relationships || !req.body.data.relationships['belongs-to']){
+    res.status(500).json({ errorCode: '007', errorMessage: 'You tried to define an input without a belongsTo relationship to a dialog line.'});
+    return;
   }
 
-  if (dialogLine.data.relationships.inputs === undefined) {
-    dialogLine.data.relationships.inputs = {
-      data: []
-    };
+  let dialogLine = xmlParser.getParsedElement("dialog_line", req.body.data.relationships['belongs-to'].data.id);
+
+  if(dialogLine.data.relationships.inputs === undefined){
+    dialogLine.data.relationships.inputs = {};
+    dialogLine.data.relationships.inputs.data = [];
   }
 
   dialogLine.data.relationships.inputs.data.push(req.body);
 
-
   xmlParser.addParsedElement("input", req.body);
+
   res.json(req.body);
 };
 
