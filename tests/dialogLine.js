@@ -2,10 +2,6 @@ const common = require('./common.js');
 const chai = common.chai;
 const server = common.server;
 const expect = common.expect;
-const fs = common.fs;
-const file = common.file;
-const xmlServer = common.xmlServer;
-const parser = common.parser;
 
 before(function(done) {
   chai.request(server)
@@ -200,7 +196,7 @@ describe('Change', function() {
       .end(function(err, res) {
         expect(err).to.be.null;
 
-        //expect(res).to.have.status(400);
+        expect(res).to.have.status(400);
 
         done();
       });

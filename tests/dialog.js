@@ -1,6 +1,5 @@
 const common = require('./common.js');
 const chai = common.chai;
-const server = common.server;
 const expect = common.expect;
 const fs = common.fs;
 const file = common.file;
@@ -30,7 +29,7 @@ describe('Create', function() {
 
   after(function(done) {
     const path = common.xmlServer.directory + '/newly_saved_dialog.xml';
-      fs.unlink(path, (err) => {
+      fs.unlink(path, () => {
         done();
       });
   })
