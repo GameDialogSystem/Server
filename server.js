@@ -42,8 +42,9 @@ parser.registerElementParser('input', require(parserPath + 'inputParser.js'), fa
 parser.registerElementParser('output', require(parserPath + 'outputParser.js'), false);
 
 builder.registerElementBuilder('dialog', require(builderPath + 'dialogBuilder.js'));
-builder.registerElementBuilder('dialog-line', require(builderPath + 'dialogLineBuilder.js'));
-builder.registerElementBuilder('connection', require(builderPath + 'connectionBuilder.js'));
+//builder.registerElementBuilder('dialog_line', require(builderPath + 'dialogLineBuilder.js'));
+//builder.registerElementBuilder('connection', require(builderPath + 'connectionBuilder.js'));
+//builder.registerElementBuilder('output', require(builderPath + 'outputBuilder.js'));
 
 
 

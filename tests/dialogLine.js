@@ -3,6 +3,7 @@ const chai = common.chai;
 const server = common.server;
 const expect = common.expect;
 
+
 before(function(done) {
   chai.request(server)
     .get('/dialogs/testing.xml')
@@ -41,9 +42,9 @@ describe('Create', function() {
       .set('content-type', 'application/vnd.api+json')
       .send({
         data: {
-          id: "newly_created_dialog_line",
+          id: 'newly_created_dialog_line',
           attributes: {
-            message: "Random Text 91",
+            message: 'Random Text 91',
             alreadySaid: false,
             x: 420,
             y: 200
@@ -52,13 +53,13 @@ describe('Create', function() {
           relationships: {
             dialog: {
               data: {
-                type: "dialogs",
-                id: "testing.xml"
+                type: 'dialog',
+                id: 'testing.xml'
               }
             }
           },
 
-          type: "dialog-lines"
+          type: 'dialog-lines'
         }
       })
       .end(function(err, res) {
@@ -74,8 +75,8 @@ describe('Create', function() {
       .set('content-type', 'application/vnd.api+json')
       .send({
         data: {
-          id: "newly_created_dialog_line",
-          type: "dialog-lines"
+          id: 'newly_created_dialog_line',
+          type: 'dialog-line'
         }
       })
       .end(function(err, res) {
@@ -91,13 +92,13 @@ describe('Create', function() {
       .set('content-type', 'application/vnd.api+json')
       .send({
         data: {
-          id: "newly_created_dialog_line",
-          type: "dialog-lines",
+          id: 'newly_created_dialog_line',
+          type: 'dialog-line',
 
           relationships: {
             dialog: {
               data: {
-                type: "dialogs",
+                type: 'dialog',
               }
             }
           },
@@ -149,25 +150,25 @@ describe('Change', function() {
   it('DLI_004', function(done) {
     common.serverRequest('patch', '/dialog-lines/3')
       .send({
-        "data": {
-          "id": "3",
-          "attributes": {
-            "message": "Second line Blub",
-            "alreadySaid": false,
-            "width": 400,
-            "height": 166,
-            "x": 10,
-            "y": 200
+        'data': {
+          'id': '3',
+          'attributes': {
+            'message': 'Second line Blub',
+            'alreadySaid': false,
+            'width': 400,
+            'height': 166,
+            'x': 10,
+            'y': 200
           },
-          "relationships": {
-            "dialog": {
-              "data": {
-                "type": "dialogs",
-                "id": "testing.xml"
+          'relationships': {
+            'dialog': {
+              'data': {
+                'type': 'dialogs',
+                'id': 'testing.xml'
               }
             }
           },
-          "type": "dialog-lines"
+          'type': 'dialog-lines'
         }
       })
       .end(function(err, res) {
@@ -179,7 +180,7 @@ describe('Change', function() {
 
   it('DLI_010', function(done) {
     var result = common.createConnectorTestData();
-    result.data.relationships.dialog.data.id = "invalid_dialog_relationships"
+    result.data.relationships.dialog.data.id = 'invalid_dialog_relationships'
 
     common.serverRequest('patch', '/dialog-lines/3')
       .send(result)

@@ -6,8 +6,8 @@ const file = common.file;
 const xmlServer = common.xmlServer;
 const parser = common.parser;
 
-const testFile = './files/newly_saved_dialog.xml';
-
+const testFile = 'newly_saved_dialog.xml';
+const testFileWithPath = common.xmlServer.directory + '/newly_saved_dialog.xml';
 describe('Create', function() {
   it('DIA_001', function(done) {
     done();
@@ -18,18 +18,20 @@ describe('Create', function() {
     chai.request('http://localhost:3000')
       .get('/dialogs/testing.xml')
       .end(function(err, res) {
-        expect(file(testFile)).to.not.exist;
+        expect(file(testFileWithPath)).to.not.exist;
         xmlServer.saveFile(res.body, testFile).then(() => {
 
-          expect(file(testFile)).to.exist;
+          expect(file(testFileWithPath)).to.exist;
           done();
-        });
+        }).catch(err => {
+          console.log(err);
+        })
       });
   })
 
+
   after(function(done) {
-    const path = common.xmlServer.directory + '/newly_saved_dialog.xml';
-      fs.unlink(path, () => {
+      fs.unlink(testFileWithPath, () => {
         done();
       });
   })

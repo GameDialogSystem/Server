@@ -16,43 +16,48 @@ exports.parse = function(element) {
     let attributes = new Map();
     if (name !== undefined) {
       attributes.set('name', name);
-    }else{
-      reject({errorCode: '004', errorMessage: 'You tried to parse an dialog file that does not specify a name.'});
+    } else {
+      reject({
+        errorCode: '004',
+        errorMessage: 'You tried to parse an dialog file that does not specify a name.'
+      });
     }
 
     let relationships = new Map();
 
-    if (element.dialog_line !== undefined) {
-      const dialogLines = element.dialog_line.map(line => {
-        if (line.$ === undefined) {
-          return null;
-        }
-
-        return emberParser.createEmberObject("dialog-line", line.$.id).data;
-      })
-
-
-      relationships.set("lines", dialogLines);
-    }
-
     // set starting line
-    let startingLine = element.$.startingLine;
+    let startingLine = element.$['starting-line'];
     if (startingLine !== undefined) {
       relationships.set("starting-line", emberParser.createEmberObject("dialog-line", startingLine).data);
     }
 
-    const parsedElement = emberParser.createEmberObject("dialog", id, attributes, relationships);
-    xmlParser.addParsedElement("dialog", parsedElement);
+    // create the actual data element
+    const parsedElement = emberParser.createEmberObject('dialog', id, attributes, relationships);
+    xmlParser.addParsedElement('dialog', parsedElement);
 
     resolve(parsedElement);
   });
 }
 
 exports.informAboutParsedChildren = function(object, children) {
-    children.forEach(child => {
-      if (child.data.type === 'dialog-line') {
-        child.data.relationships['dialog'] = emberParser.convertEmberObjectToEmberRelationship(object);
-      }
-    });
+  object.data.relationships.lines = {
+    data: new Array()
+  };
 
+  // add each dialog line to the lines relationship and create the
+  // relationship to the dialog for each dialog line
+  children.forEach(child => {
+    if (child.data.type === 'dialog-line') {
+      object.data.relationships.lines.data.push(child);
+
+      // needed for dialogs with only one dialog line
+      if (!child.data.relationships) {
+        child.data.relationships = {};
+      }
+
+      child.data.relationships['dialog'] = {
+        'data': emberParser.convertEmberObjectToEmberRelationship(object)
+      };
+    }
+  });
 }

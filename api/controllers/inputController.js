@@ -6,6 +6,7 @@ exports.createInput = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
+  let data = req.body.data;
 
   if (req.body.data === undefined) {
     res.sendStatus(500);
@@ -13,16 +14,26 @@ exports.createInput = function(req, res) {
   }
 
 
-  if (pluralize.isPlural(req.body.data.type)) {
-    req.body.data.type = pluralize.singular(req.body.data.type);
+  if (pluralize.isPlural(data.type)) {
+    data.type = pluralize.singular(data.type);
   }
 
-  if(!req.body.data.relationships || !req.body.data.relationships['belongs-to']){
+  if(!data.relationships || !data.relationships['belongs-to']){
     res.status(500).json({ errorCode: '007', errorMessage: 'You tried to define an input without a belongsTo relationship to a dialog line.'});
     return;
   }
 
-  let dialogLine = xmlParser.getParsedElement("dialog_line", req.body.data.relationships['belongs-to'].data.id);
+  data.relationships['belongs-to'].data.type = pluralize.singular(data.relationships['belongs-to'].data.type).replace('-', '_');
+
+  if(data.relationships.connection){
+    data.relationships.connection.data.type = pluralize.singular(data.relationships.connection.data.type).replace('-', '_');
+  }
+
+  let dialogLine = xmlParser.getParsedElement("dialog_line", data.relationships['belongs-to'].data.id);
+  if(!dialogLine){
+    res.status(500).json({ errorCode: '010', errorMessage: 'You tried to save an input that belongs to a dialog line that is unknown within the model. Always make sure you save the dialog line first in case you created a new one.'})
+    return;
+  }
 
   if(dialogLine.data.relationships.inputs === undefined){
     dialogLine.data.relationships.inputs = {};
@@ -44,15 +55,15 @@ exports.getInput = function(req, res) {
   res.header("Access-Control-Allow-Headers", "*");
 
   let input = xmlParser.getParsedElement("input", req.params.inputId);
-  const data = input.data;
+  if(!input){
+    res.status(500).send('You tried to receive an input that is not known by the current model. This is probably due a wrong or manipulated request.');
+    return;
+  }
 
+  const data = input.data;
   const relationships = data.relationships;
   if (relationships && relationships.connection) {
     data.relationships.connection = emberDataParser.createEmberObject("connection", relationships.connection.data.id);
-
-    data.relationships['belongs-to'] = {
-      'data': data.relationships['belongs-to']
-    };
   }
 
   res.json(input);

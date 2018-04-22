@@ -1,6 +1,7 @@
 const server = require('../libraries/xmlServer.js'),
     xmlParser = require("../libraries/parser/xmlParser.js"),
-    emberDataParser = require("../libraries/parser/emberDataParser.js");
+    emberDataParser = require("../libraries/parser/emberDataParser.js"),
+    pluralize = require('pluralize');
 
   exports.getDialogLine = function(req, res) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -16,8 +17,6 @@ const server = require('../libraries/xmlServer.js'),
 
       if (relationships !== undefined) {
         if (relationships.inputs) {
-
-          console.log(relationships)
           inputs = relationships.inputs.data.map(input => {
             return emberDataParser.createEmberObject("input", input.data.id).data;
           });
@@ -51,30 +50,28 @@ const server = require('../libraries/xmlServer.js'),
 
     const dialogId = req.body.data.relationships.dialog.data.id;
 
+
     const dialogLineData = req.body.data;
     if (dialogId !== undefined) {
       server.getDialog(dialogId).then((result) => {
+
         // iterate over all dialog lines to find the correct one
         result.data.relationships.lines.data.forEach((line) => {
-          if (line.id === dialogLineData.id) {
-            server.getDialogLine(line.id).then(dialogLine => {
+          if (line.data.id === dialogLineData.id) {
+            server.getDialogLine(line.data.id).then(dialogLine => {
               // update the message (for now)
               dialogLine.data.attributes.message = dialogLineData.attributes.message;
 
               // inform server about the made changes
-              server.setDialogLine(line.id, dialogLine).then(dialogLine => {
-                res.json(dialogLine);
-              });
+              xmlParser.setParsedElement('dialog_line', line.data.id, dialogLine);
+              res.json(dialogLine);
             });
           }
         });
-
-        res.json(req.body);
       }, (error) => {
         res.status(400).json(error);
         return;
-      })
-
+      });
     } else {
       res.status(400).send(`you modified a dialog line that is unknown for the server.
       This is most likely a software bug. Please report the problem in order to prevent the error to happening in future
@@ -102,12 +99,19 @@ const server = require('../libraries/xmlServer.js'),
     }
 
     const dialogId = data.relationships.dialog.data.id;
-
-    data.relationships.dialog = data.relationships.dialog.data;
-
     if (dialogId !== undefined) {
       server.getDialog(dialogId).then((result) => {
-        result.data.relationships.lines.data.push(data);
+        if(!result.data.relationships.lines){
+          result.data.relationships.lines = {
+            data: []
+          }
+        }
+
+        const id = data.id;
+        data.type = pluralize.singular(data.type).replace('-', '_');
+        data.relationships.dialog.data.type = pluralize.singular(data.relationships.dialog.data.type);
+
+        result.data.relationships.lines.data.push(req.body);
 
         xmlParser.addParsedElement("dialog_line", req.body);
       });
@@ -124,27 +128,50 @@ const server = require('../libraries/xmlServer.js'),
     res.header("Access-Control-Allow-Headers", "*");
 
     const id = req.params.dialogLineId;
-    const object = xmlParser.removeParsedElement("dialog_line", id);
+    const dialogLine = xmlParser.removeParsedElement("dialog_line", id);
 
-    if(object === undefined){
+    if(dialogLine === undefined){
       res.status(400).send();
       return;
     }
 
+    // remove relationship between dialog line and dialog
+    if(dialogLine.data.relationships){
+      if(dialogLine.data.relationships.dialog){
+        const dialog = xmlParser.getParsedElement('dialog', dialogLine.data.relationships.dialog.data.id);
 
+        let relationships = dialog.data.relationships.lines.data;
+        const index = relationships.findIndex(dialogLine => {
+          return dialogLine.data.id === id;
+        });
 
-    const dialog = xmlParser.getParsedElement('dialog', object.data.relationships.dialog.id);
+        relationships = relationships.splice(index, index+1);
+        xmlParser.setParsedElement('dialog', dialog.data.id, dialog);
 
-    let relationships = dialog.data.relationships.lines.data;
-    if(relationships === undefined){
+        let dialogLineRelationships = dialogLine.data.relationships;
+        if(dialogLineRelationships.inputs){
+          dialogLineRelationships.inputs.data.forEach(input => {
+            xmlParser.removeParsedElement(input.data.type, input.data.id);
+          });
+        }
 
+        if(dialogLineRelationships.outputs.data){
+          dialogLineRelationships.outputs.data.forEach(output => {
+            const outputRelationships = output.data.relationships;
+            if(outputRelationships){
+              if(outputRelationships.connection){
+                const connection = outputRelationships.connection;
+                xmlParser.removeParsedElement(connection.data.type, connection.data.id);
+
+                const input = connection.data.relationships.input;
+                xmlParser.removeParsedElement(input.data.type, input.data.id);
+              }
+            }
+            xmlParser.removeParsedElement(output.data.type, output.data.id);
+          });
+        }
+      }
     }
-    const index = relationships.findIndex(dialogLine => {
-      return dialogLine.id === id;
-    });
-
-    relationships = relationships.splice(index, index+1);
-
 
     res.json({ data : {id: req.params.dialogLineId,  type: 'dialog-line'} });
   };

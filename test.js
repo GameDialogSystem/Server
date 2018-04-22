@@ -67,7 +67,7 @@ describe('Server', function() {
   //
   // Dialog related test cases
   //
-  describe('Dialog', function() {
+  describe('dialogs', function() {
     require('./tests/dialog.js')
   });
 

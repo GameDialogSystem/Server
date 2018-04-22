@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<dialog id="testing.xml" name="Bunny Dialog" starting-line="2">
+<dialog id="save_test.xml" name="Bunny Dialog" starting-line="2">
   <dialog_line id="2" x="10" y="10" outputs="o1">
-    <text>S 0_0</text>
+    <text>Hello you :)</text>
   </dialog_line>
 
-  <dialog_line id="3" x="10" y="200" inputs="i1" outputs="o2">
-    <text>Second line</text>
+  <dialog_line id="3" x="10" y="200" outputs="o2" inputs="i1">
+    <text>Kiste</text>
   </dialog_line>
 
   <dialog_line id="4" x="10" y="400" inputs="i2">

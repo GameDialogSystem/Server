@@ -8,21 +8,22 @@ const Promise = require("bluebird"),
 exports.directory = resolve(__dirname + '/../../files/');
 
 exports.saveFile = function(object, filename) {
-  let dialog = parser.getParsedElement("dialog", object.data.id);
-  return builder.buildFile(filename, dialog);
+  let dialog = parser.getParsedElement('dialog', object.data.id);
+
+  return builder.buildFile(this.directory + '/' + filename, dialog);
 }
 
 exports.getDialogs = function(){
-  return parser.getAllParsedElementsOfATag("dialog");
+  return parser.getAllParsedElementsOfATag('dialog');
 }
 
 exports.getDialog = function(id){
   return new Promise((resolve, reject) => {
-    let dialog = parser.getParsedElement("dialog", id);
+    let dialog = parser.getParsedElement('dialog', id);
 
     if(dialog !== undefined){
       resolve(dialog);
-    }else{
+    }else{   
       parser.parseFile(path.join(this.directory, id)).then(dialog => {
         resolve(dialog);
       }, reason => {

@@ -10,6 +10,7 @@ describe('Create', function() {
         data:
       {
         id: 1,
+        type: 'connection',
 
         relationships : {
           output: {
