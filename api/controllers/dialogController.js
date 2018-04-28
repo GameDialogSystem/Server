@@ -26,6 +26,7 @@ exports.getDialog = function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
+  xmlParser.clearElements();
   server.getDialog(decodeURIComponent(req.params.dialogId)).then(dialog => {
     let deepCopy = JSON.parse(JSON.stringify(dialog));
     let lines = deepCopy.data.relationships.lines;

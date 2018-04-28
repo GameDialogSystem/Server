@@ -21,9 +21,9 @@ exports.getDialog = function(id){
   return new Promise((resolve, reject) => {
     let dialog = parser.getParsedElement('dialog', id);
 
-    if(dialog !== undefined){
+    if(dialog){
       resolve(dialog);
-    }else{   
+    }else{
       parser.parseFile(path.join(this.directory, id)).then(dialog => {
         resolve(dialog);
       }, reason => {

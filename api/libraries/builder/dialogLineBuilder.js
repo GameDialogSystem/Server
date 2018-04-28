@@ -31,11 +31,11 @@ exports.build = function(element) {
 
     };
 
-    if (outputs) {
+    if (outputs && outputs.length) {
       result['$'].outputs = outputs;
     }
 
-    if (inputs) {
+    if (inputs && inputs.length) {
       result['$'].inputs = inputs;
     }
 

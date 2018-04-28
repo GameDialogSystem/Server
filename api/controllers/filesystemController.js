@@ -5,12 +5,12 @@ const fs = require('fs'),
 
 
 dirTree = function(folder) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     return fs.readdir(folder, (err, content) => {
 
       files = content.map((fileName) => {
         try{
-          const stat = fs.statSync(folder + fileName);
+          const stat = fs.statSync(folder + '/' + fileName);
 
           const extension = path.extname(fileName);
 
@@ -28,7 +28,7 @@ dirTree = function(folder) {
         // TODO .steampath error make sure to change this behavior to
         // handle the raise of the exception approbatly
         }catch(exception){
-
+          reject(exception);
         }
       })
 

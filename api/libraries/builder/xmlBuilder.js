@@ -6,7 +6,7 @@ const elementBuilders = new Map(),
     'rootName': 'dialog'
   }),
   xmlParser = require("./../parser/xmlParser.js");
-var xx = require('xmlbuilder');
+
 const buildElements = new Map();
 
 exports.registerElementBuilder = function(tag, builder) {

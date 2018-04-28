@@ -22,7 +22,17 @@ var _elementParsers = new Map();
  */
 var parsedElements = new Map();
 
+exports.clearElements = function() {
+  for (const [key, value] of parsedElements) {
+    parsedElements.get(key).clear();
+  }
+}
+
 exports.getParsedElement = function(tag, id) {
+  if(!parsedElements.has(tag)){
+    return undefined;
+  }
+
   return this.getAllParsedElementsOfATag(tag).get(id);
 }
 
