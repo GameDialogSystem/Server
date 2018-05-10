@@ -1,17 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <dialog id="testing.xml" name="Bunny Dialog" starting-line="2">
-  <dialog_line id="2" x="10" y="10" outputs="o1">
+  <dialog_line id="2" x="840" y="10" outputs="ced4b161-b3f3-4b54-b793-73091c6c45d2,35c8eca3-e17b-4e06-a43b-7c477cc5d7eb">
     <text>S 0_0</text>
   </dialog_line>
-
-  <dialog_line id="3" x="10" y="200" inputs="i1" outputs="o2">
-    <text>Second line</text>
+  <dialog_line id="da57295d-7342-46b8-bf24-5c19ab503668" x="420" y="196" outputs="5cc887e3-1c60-4f26-856b-07c8f09b58d7,dfcda918-5c73-4fcb-b7c2-ce7b03bfea5d" inputs="f9bc90d5-9e3c-4f8c-89f7-c2819e3662d2">
+    <text>Random Text 34</text>
   </dialog_line>
-
-  <dialog_line id="4" x="10" y="400" inputs="i2">
-    <text>Third line</text>
+  <dialog_line id="c32dea39-648b-4441-a870-c7ad932fbd4e" x="1470" y="196" outputs="b46772d8-9c04-4473-9853-a7161218557b,97f1f610-403a-45b3-89e6-f58b0caa473b" inputs="3fa5bb6a-b849-4461-b9c8-16c207d16ce7">
+    <text>Random Text 21</text>
   </dialog_line>
-
-  <connection id="1" input="i1" output="o1" />
-  <connection id="2" input="i2" output="o2" />
+  <dialog_line id="f470054b-162a-45ad-a9fb-f212bd1aaaa9" x="0" y="382" inputs="a26912d9-2340-4192-a23a-5769700ed173">
+    <text>Random Text 8</text>
+  </dialog_line>
+  <dialog_line id="4cce2817-9e42-4712-baaf-4a5a772132e7" x="630" y="382" outputs="c3b957c0-0ced-4073-ac88-6d26d63c29ef,ef4eac7a-298c-4fb3-b496-5f5d9a1936f7" inputs="cdecfd52-05e5-4cf8-8b81-59246ee583f5">
+    <text>Random Text 59</text>
+  </dialog_line>
+  <dialog_line id="d9d24a61-4468-4cc0-b0f4-a811b45563c2" x="420" y="568" inputs="32a5a45e-c223-4855-8528-6c401efdfb2f">
+    <text>Random Text 87</text>
+  </dialog_line>
+  <dialog_line id="709cbec3-1bd5-497d-8d2d-e6d1ed84da1d" x="1260" y="382" inputs="fc5502f8-3bd0-4c33-b3e9-feaad040614c">
+    <text>Random Text 72</text>
+  </dialog_line>
+  <dialog_line id="5449b649-f3e6-431c-9d68-abbbe6e494d6" x="1680" y="382" inputs="cc238cc5-07cd-4082-891a-6e366c104d9d">
+    <text>Random Text 21</text>
+  </dialog_line>
+  <dialog_line id="59c1ccb2-c053-4ed1-b7f2-b4f8a8902443" x="840" y="568" inputs="8bb06b17-1804-4c8c-a506-a02192d00169">
+    <text>Random Text 75</text>
+  </dialog_line>
+  <connection id="b242fc75-c943-4436-af86-d01c527f75e1" output="ced4b161-b3f3-4b54-b793-73091c6c45d2" input="f9bc90d5-9e3c-4f8c-89f7-c2819e3662d2"/>
+  <connection id="f1f5a691-7a16-4779-b3dc-f607f8855f65" output="35c8eca3-e17b-4e06-a43b-7c477cc5d7eb" input="3fa5bb6a-b849-4461-b9c8-16c207d16ce7"/>
+  <connection id="1523a581-94c9-474f-9748-640b197b1e41" output="5cc887e3-1c60-4f26-856b-07c8f09b58d7" input="a26912d9-2340-4192-a23a-5769700ed173"/>
+  <connection id="3d2b8bb2-7bda-40c8-85a6-5d16dd14a3a5" output="dfcda918-5c73-4fcb-b7c2-ce7b03bfea5d" input="cdecfd52-05e5-4cf8-8b81-59246ee583f5"/>
+  <connection id="6cbf5711-df76-4dac-8b72-650de5f8514f" output="b46772d8-9c04-4473-9853-a7161218557b" input="fc5502f8-3bd0-4c33-b3e9-feaad040614c"/>
+  <connection id="bba51cfd-e480-4701-85fe-2b4934f150ae" output="97f1f610-403a-45b3-89e6-f58b0caa473b" input="cc238cc5-07cd-4082-891a-6e366c104d9d"/>
+  <connection id="3f36eeb0-ae64-4a76-b32a-5b14418900ac" output="c3b957c0-0ced-4073-ac88-6d26d63c29ef" input="32a5a45e-c223-4855-8528-6c401efdfb2f"/>
+  <connection id="0903d538-a079-4146-a0b8-c0ca3d073e37" output="ef4eac7a-298c-4fb3-b496-5f5d9a1936f7" input="8bb06b17-1804-4c8c-a506-a02192d00169"/>
 </dialog>
