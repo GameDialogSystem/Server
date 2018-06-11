@@ -36,10 +36,12 @@ const parserPath = './api/libraries/parser/';
 
 
 parser.registerElementParser('dialog', require(parserPath + 'dialogParser.js'), false);
+parser.registerElementParser('meta', require(parserPath + 'metaParser.js'), false);
 parser.registerElementParser('dialog_line', require(parserPath + 'dialogLineParser.js'), true);
 parser.registerElementParser('connection', require(parserPath + 'connectionParser.js'), false);
 parser.registerElementParser('input', require(parserPath + 'inputParser.js'), false);
 parser.registerElementParser('output', require(parserPath + 'outputParser.js'), false);
+
 
 builder.registerElementBuilder('dialog', require(builderPath + 'dialogBuilder.js'));
 //builder.registerElementBuilder('dialog_line', require(builderPath + 'dialogLineBuilder.js'));

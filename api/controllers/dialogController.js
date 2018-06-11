@@ -7,11 +7,13 @@ exports.listAllDialogs = function(req, res) {
   res.header("Access-Control-Allow-Headers", "*");
 
   var elements = [];
-  server.getDialogs().forEach((value) => {
-    elements.push(value.data);
-  });
-
-  res.json({ "data" : elements });
+  server.getDialogs(['dialog', 'meta']).then(dialogs => {
+    res.json({
+      "data": dialogs.map(dialog => {
+        return dialog.data;
+      })
+    });
+  })
 }
 
 
@@ -55,9 +57,9 @@ exports.deleteDialog = function(req, res) {
   res.header("Access-Control-Allow-Headers", "*");
 
   const object = xmlParser.removeParsedElement('dialog', req.params.dialogId);
-  if(object === undefined){
+  if (object === undefined) {
     res.status(400).send();
-  }else{
+  } else {
     res.json(object);
   }
 };

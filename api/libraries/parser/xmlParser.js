@@ -3,9 +3,8 @@ var xml2js = require('xml2js'),
   Promise = require("bluebird"),
   events = require('events');
 
-var parser = new xml2js.Parser({
-  'async': true
-});
+  var parser = undefined;
+
 var eventEmitter = new events.EventEmitter();
 eventEmitter.setMaxListeners(0);
 
@@ -85,9 +84,12 @@ getElementParser = function(tagName) {
  * @see registerElementParser function.
  *
  * @param  {string} file relative path to the xml that is going to be parsed
+ * @param {object} filteredTags array of allowed strings. If defined only the tags
+ * within this array are getting parsed and processed by the parser. Other tags
+ * are ignored
  * @return {type}      description
  */
-exports.parseFile = function(file) {
+exports.parseFile = function(file, filteredTags) {
   let self = this;
 
   return new Promise((resolve, reject) => {
@@ -96,23 +98,28 @@ exports.parseFile = function(file) {
       return;
     }
 
-    fs.readFile(file, (error, data) => {
+    fs.readFile(file, "utf8", (error, data) => {
       if (error){
         reject(error);
       }
+
+      parser = new xml2js.Parser({
+        'async': true
+      });
 
       parser.parseString(data, (error, result) => {
         if (error) throw error;
 
         let tag = Object.keys(result)[0];
 
-        self.parseElement(tag, result[tag]).then(element => {
+        self.parseElement(tag, result[tag], filteredTags).then(element => {
           resolve(element);
         }, reason => {
           reject(reason);
         });
       });
-    });
+    })
+
   });
 }
 
@@ -124,17 +131,29 @@ exports.parseFile = function(file) {
  * @param {string} tag the tag name of the element. This is used to get the
  * correct parser for an element
  * @param  {object} element the element you want to parse in form of an object
+ * @param {object} filteredTags array of allowed strings. If defined only the tags
+ * within this array are getting parsed and processed by the parser. Other tags
+ * are ignored
+ *
  * @return {type}         description
  */
-exports.parseElement = function(tag, element) {
+exports.parseElement = function(tag, element, filteredTags) {
   let self = this;
 
+
+
   if (typeof element === "string") {
+
     return new Promise.resolve(element);
+  }
+
+  if(filteredTags !== undefined && !filteredTags.includes(tag)){
+    return new Promise.resolve(undefined);
   }
 
   return new Promise((resolve, reject) => {
     var keys = Object.keys(element);
+
 
     keys.splice(keys.indexOf('$'), 1);
 
@@ -145,19 +164,29 @@ exports.parseElement = function(tag, element) {
       reject(e.message);
     }
 
+
     let object = elementParser.parse(element, this);
     object.then(function(value){
       var children = [];
 
+
       keys.forEach((key) => {
         if (Array.isArray(element[key])) {
           element[key].forEach((child) => {
-            children.push(self.parseElement(key, child, resolve, reject));
+
+
+            // Prevent that filtered children are added to the children of the
+            // current element.
+            if(filteredTags === undefined || (filteredTags.includes && filteredTags.includes(key))){
+              const parsedChild = self.parseElement(key, child, filteredTags);
+              children.push(parsedChild);
+            }
           })
         }
       });
 
       Promise.all(children).then(children => {
+        console.log(children);
         elementParser.informAboutParsedChildren(value, children);
 
         self.getAllParsedElementsOfATag(tag).set(value.data.id, value);
@@ -166,7 +195,7 @@ exports.parseElement = function(tag, element) {
       }, (reason) => {
         reject(reason);
       })
-    }, function(reason){
+    }, (reason) => {
       reject(reason);
     });
   });

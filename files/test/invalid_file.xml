@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<dialog id="invalid_file.xml" name="Bunny Dialog" startingLine="2">
+<dialog id="invalid_file.xml" name="invalid_file" startingLine="2">
 
   <dialog_line><text>S 0_0</text></dialog_line>
   <dialog_line x="" y=""><text>S 0_0</text></dialog_line>

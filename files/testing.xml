@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <dialog id="testing.xml" name="Bunny Dialog" starting-line="2">
+  <meta>
+    <description>Dialog to test the functionality of the tool</description>
+  </meta>
   <dialog_line id="2" x="840" y="10" outputs="ced4b161-b3f3-4b54-b793-73091c6c45d2,35c8eca3-e17b-4e06-a43b-7c477cc5d7eb">
     <text>S 0_0</text>
   </dialog_line>

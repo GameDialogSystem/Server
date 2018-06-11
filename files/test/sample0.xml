@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<dialog id="sample0.xml" name="Bunny Dialog" startingLine="2">
+<dialog id="sample0.xml" name="sample0" startingLine="2">
   <dialog_line id="2" x="10" y="10" outputs="line2output1,line2output2,line2output3">
     <condition>Here goes a condition 2</condition>
     <text>S 0_0</text>

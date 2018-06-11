@@ -47,6 +47,7 @@ exports.informAboutParsedChildren = function(object, children) {
   // add each dialog line to the lines relationship and create the
   // relationship to the dialog for each dialog line
   children.forEach(child => {
+    console.log(child);
     if (child.data.type === 'dialog-line') {
       object.data.relationships.lines.data.push(child);
 
@@ -58,6 +59,8 @@ exports.informAboutParsedChildren = function(object, children) {
       child.data.relationships['dialog'] = {
         'data': emberParser.convertEmberObjectToEmberRelationship(object)
       };
+    }else if(child.data.type === 'meta'){
+      object.data.attributes.description = child.data.attributes.description;
     }
   });
 }
