@@ -6,7 +6,9 @@
   "scripts": {
     "test": "nyc --reporter=html --reporter=text mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "prepare": "npm run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -44,9 +46,11 @@
     "chai-fs": "^2.0.0",
     "chai-http": "^4.0.0",
     "express": "^4.16.3",
-    "npm": "^6.0.1",
+    "npm": "^7.21.0",
     "pluralize": "^7.0.0",
     "uuid": "^3.2.1",
-    "xml2js": "^0.4.19"
-  }
+    "xml2js": "^0.4.19",
+    "@snyk/protect": "latest"
+  },
+  "snyk": true
 }
